@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -21,6 +22,11 @@ function HeaderContent() {
   const [lastScrollY, setLastScrollY] = useState(0);
 
   const { user } = useAuth();
+  const pathname = usePathname();
+
+  const isActive = (path: string) => {
+    return pathname === path;
+  };
 
   // Đóng dropdown khi click ngoài
   useEffect(() => {
@@ -68,16 +74,40 @@ function HeaderContent() {
         <div className="flex justify-between items-center px-20 h-8 text-[13px]">
           {/* Left Top */}
           <div className="flex items-center gap-3">
-            <Link href="/links">Hello</Link>
-            <span>Link</span>
+            <Link 
+              href="/links" 
+              className={`${isActive('/links') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
+            >
+              Hello
+            </Link>
+            <Link 
+              href="/about" 
+              className={`${isActive('/about') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
+            >
+              About
+            </Link>
             <div className="bg-black h-[13px] w-[1px]" />
-            <span>Link</span>
+            <Link 
+              href="/contact" 
+              className={`${isActive('/contact') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
+            >
+              Contact
+            </Link>
           </div>
 
           {/* Right Top */}
           <div>
-            {user && <span className="ml-2 bg-gray-200/60 py-[1px] px-2 rounded-2xl smax-w-[120px] truncate">{user.email}</span>}
-            <span className="ml-2 text-white">Contact</span>
+            {user && (
+              <span className="ml-2 bg-gray-200/60 py-[1px] px-2 rounded-2xl smax-w-[120px] truncate">
+                {user.email}
+              </span>
+            )}
+            <Link 
+              href="/contact" 
+              className={`ml-2 ${isActive('/contact') ? 'text-blue-400 font-medium' : 'text-white hover:text-blue-300'}`}
+            >
+              Contact
+            </Link>
           </div>
         </div>
 
@@ -100,16 +130,47 @@ function HeaderContent() {
             <div className="relative" ref={aboutRef}>
               <button
                 onClick={() => setAboutDropdownOpen(!aboutDropdownOpen)}
-                className="text-gray-300 hover:text-white px-3 py-1 rounded cursor-pointer focus:outline-none"
+                className={`px-3 py-1 rounded cursor-pointer focus:outline-none transition-all duration-300 ${
+                  isActive('/about') 
+                    ? 'text-black bg-white/90 font-medium shadow-sm' 
+                    : 'text-gray-200 hover:text-white hover:bg-white/20'
+                }`}
               >
                 About
               </button>
               {aboutDropdownOpen && <AboutDropdown onClose={() => setAboutDropdownOpen(false)} />}
             </div>
 
-            <Link href="/project" className="text-gray-300 hover:text-white">Project</Link>
-            <Link href="/service" className="text-gray-300 hover:text-white">Service</Link>
-            <Link href="/contact" className="text-gray-300 hover:text-white">Contact</Link>
+            <Link 
+              href="/project" 
+              className={`px-3 py-1 rounded transition-all duration-300 ${
+                isActive('/project')
+                  ? 'text-black bg-white/90 font-medium shadow-sm'
+                  : 'text-gray-200 hover:text-white hover:bg-white/20'
+              }`}
+            >
+              Project
+            </Link>
+            <Link 
+              href="/service" 
+              className={`px-3 py-1 rounded transition-all duration-300 ${
+                isActive('/service')
+                  ? 'text-black bg-white/90 font-medium shadow-sm'
+                  : 'text-gray-200 hover:text-white hover:bg-white/20'
+              }`}
+            >
+              Service
+            </Link>
+            <Link 
+              href="/contact" 
+              className={`px-3 py-1 rounded transition-all duration-300 ${
+                isActive('/contact')
+                  ? 'text-black bg-white/90 font-medium shadow-sm'
+                  : 'text-gray-200 hover:text-white hover:bg-white/20'
+              }`}
+            >
+              Contact
+            </Link>
 
             {/* Account */}
             <div className="ml-10 relative" ref={authRef}>
