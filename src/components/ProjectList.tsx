@@ -15,7 +15,7 @@ export default function ProjectList() {
       {projects.map((project) => (
         <div
           key={project.id}
-          className="group relative flex flex-col rounded-2xl border border-white/20 bg-black/20 backdrop-blur-lg shadow-lg transition-all duration-300 hover:shadow-2xl hover:border-white/30 overflow-hidden"
+          className="group relative flex flex-col rounded-2xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-lg transition-all duration-300 hover:shadow-2xl hover:border-white/30 overflow-hidden"
         >
           {/* Ảnh dự án */}
           {project.featured_image_url && (
@@ -34,7 +34,7 @@ export default function ProjectList() {
             </h3>
 
             {/* Mô tả */}
-            <p className="text-gray-300 line-clamp-3 flex-grow">
+            <p className="text-white line-clamp-3 flex-grow">
               {project.short_description}
             </p>
 
@@ -45,7 +45,7 @@ export default function ProjectList() {
                   href={project.demo_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-white hover:text-white transition-colors"
                 >
                   <FaExternalLinkAlt />
                   <span>Demo</span>
@@ -56,7 +56,7 @@ export default function ProjectList() {
                   href={project.github_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-white hover:text-white transition-colors"
                 >
                   <FaGithub />
                   <span>GitHub</span>
@@ -68,23 +68,23 @@ export default function ProjectList() {
             <div className="flex items-center gap-2 mt-3">
               {project.status === 'completed' && (
                 <FaCheckCircle
-                  title="Hoàn thành"
+                  title="Completed"
                   className="text-green-600 text-lg"
                 />
               )}
               {project.status === 'in-progress' && (
                 <MdOutlinePending
-                  title="Đang thực hiện"
+                  title="In Progress"
                   className="text-yellow-500 text-lg"
                 />
               )}
               {project.status === 'archived' && (
                 <FaArchive
-                  title="Đã lưu trữ"
+                  title="Archived"
                   className="text-gray-500 text-lg"
                 />
               )}
-              <span className="text-sm font-medium text-gray-600 capitalize">
+              <span className="text-sm font-medium text-white capitalize">
                 {project.status.replace('-', ' ')}
               </span>
             </div>

@@ -10,24 +10,24 @@ export default function SkillList() {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 bg-gray-200/60 rounded-2xl  " >
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" >
       {skills.map((skill) => (
         <div
           key={skill.id}
-          className="p-4 border rounded-lg shadow-sm hover:shadow-md transition"
+          className="flex flex-col items-center text-center p-6 rounded-2xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-lg transition-all duration-300 hover:shadow-2xl hover:border-white/30"
         >
           {skill.icon_url && (
             <img
               src={skill.icon_url}
               alt={skill.name}
-              className="w-12 h-12 mb-3"
+              className="w-16 h-16 object-contain"
             />
           )}
-          <h3 className="text-lg font-semibold">{skill.name}</h3>
-          <p className="text-gray-500 text-sm capitalize">{skill.category}</p>
-          <div className="mt-2 w-full rounded-full h-2">
+          <h3 className="text-lg font-semibold text-white mt-3">{skill.name}</h3>
+          <p className="text-gray-400 text-sm capitalize mb-3">{skill.category}</p>
+          <div className="w-full bg-white/10 rounded-full h-2.5">
             <div
-              className="bg-gradient-to-r from-red-600 via-red-500 to-red-400 h-2 rounded-full"
+              className="bg-gradient-to-r from-blue-500 to-cyan-400 h-2.5 rounded-full"
               style={{ width: `${(skill.proficiency_level / 5) * 100}%` }}
             />
           </div>

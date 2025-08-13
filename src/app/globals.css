@@ -123,7 +123,7 @@
 }
 
 .bg-custom {
-  background-image: url('../../public/background.jpg'); 
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../../public/background.jpg'); 
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -133,5 +133,6 @@
 
 /* darkmode */
 .dark .bg-custom {
-  background-image: url('/images/bg-dark.jpg'); /* Ảnh nền dark mode */
+  /* Bạn có thể điều chỉnh lớp phủ cho dark mode nếu cần */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images/bg-dark.jpg');
 }

@@ -17,23 +17,23 @@ export default function ProjectPage() {
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Sidebar - Filters */}
-        <aside className="lg:w-1/4 p-6 bg-gray-50 rounded-lg shadow-sm h-fit">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Filters</h3>
+        <aside className="lg:w-1/4 p-6 bg-black/30 backdrop-blur-lg rounded-lg shadow-sm h-fit">
+          <h3 className="text-xl font-bold text-white mb-4">Filters</h3>
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold text-gray-700 mb-2">Category</h4>
+              <h4 className="font-semibold text-white mb-2">Category</h4>
               <ul className="space-y-1">
-                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-gray-600">Web Development</span></label></li>
-                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-gray-600">Mobile Apps</span></label></li>
-                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-gray-600">UI/UX Design</span></label></li>
+                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-white">Web Development</span></label></li>
+                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-white">Mobile Apps</span></label></li>
+                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-white">UI/UX Design</span></label></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-700 mb-2">Technology</h4>
+              <h4 className="font-semibold text-white mb-2">Technology</h4>
               <ul className="space-y-1">
-                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-gray-600">React</span></label></li>
-                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-gray-600">Next.js</span></label></li>
-                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-gray-600">Vue.js</span></label></li>
+                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-white">React</span></label></li>
+                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-white">Next.js</span></label></li>
+                <li><label className="flex items-center"><input type="checkbox" className="form-checkbox h-5 w-5 text-red-600 rounded" /> <span className="ml-2 text-white">Vue.js</span></label></li>
               </ul>
             </div>
           </div>
