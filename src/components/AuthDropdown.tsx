@@ -14,7 +14,7 @@ export function AuthDropdown({ onClose }: AuthDropdownProps) {
   return (
     <div
       className="
-        absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-xl
+        absolute right-0 mt-2 w-64 bg-gray-900/35 border border-black rounded-lg shadow-xl
         z-50 p-5 flex flex-col gap-4
         dark:bg-gray-800 dark:border-gray-700
         "

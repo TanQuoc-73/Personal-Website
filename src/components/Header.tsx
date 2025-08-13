@@ -18,7 +18,7 @@ function HeaderContent() {
   const aboutRef = useRef<HTMLDivElement>(null);
 
   // State cho hiệu ứng ẩn/hiện và scroll
-  const [opacity, setOpacity] = useState(1);
+  const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -43,31 +43,47 @@ function HeaderContent() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Lắng nghe sự kiện scroll để ẩn/hiện Header dần dần
+  // Lắng nghe sự kiện scroll để ẩn/hiện Header mượt mà
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Thay đổi background khi scroll
-      setIsScrolled(currentScrollY > 20);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          
+          // Thay đổi background khi scroll
+          setIsScrolled(currentScrollY > 20);
 
-      if (currentScrollY > lastScrollY && currentScrollY > 80) {
-        setOpacity(prev => Math.max(prev - 0.15, 0.3)); 
-      } else {
-        setOpacity(prev => Math.min(prev + 0.15, 1)); 
+          // Logic ẩn/hiện header
+          if (currentScrollY < 100) {
+            // Luôn hiện khi ở top
+            setIsVisible(true);
+          } else if (currentScrollY > lastScrollY) {
+            // Scroll down - ẩn header
+            setIsVisible(false);
+          } else if (lastScrollY - currentScrollY > 5) {
+            // Scroll up với minimum delta - hiện header
+            setIsVisible(true);
+          }
+
+          setLastScrollY(currentScrollY);
+          ticking = false;
+        });
+        ticking = true;
       }
-
-      setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
   return (
     <>
       <div
-        className={`fixed top-0 w-full z-50 transition-all duration-500 ease-out backdrop-blur-md ${
+        className={`fixed top-0 w-full z-50 transition-all duration-500 ease-out backdrop-blur-md transform ${
+          isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+        } ${
           isScrolled 
             ? 'shadow-2xl border-b border-gray-800/20' 
             : 'shadow-lg border-b border-transparent'
@@ -76,7 +92,6 @@ function HeaderContent() {
           background: isScrolled 
             ? 'linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,20,0.95) 50%, rgba(40,40,40,0.95) 100%)'
             : 'linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(30,30,30,0.9) 50%, rgba(60,60,60,0.9) 100%)',
-          opacity: opacity,
           backdropFilter: 'blur(20px)'
         }}
       >
@@ -205,7 +220,7 @@ function HeaderContent() {
             {/* Account Button */}
             <div className="ml-6 relative" ref={authRef}>
               <Button
-                variant="outline"
+                variant="ghost"
                 className={`group relative flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-300 overflow-hidden ${
                   dropdownOpen
                     ? 'bg-gradient-to-r from-red-600/90 to-red-700/90 text-white shadow-lg shadow-red-500/20'
