@@ -34,9 +34,7 @@ function HeaderContent() {
       if (authRef.current && !authRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
       }
-      if (aboutRef.current && !aboutRef.current.contains(event.target as Node)) {
-        setAboutDropdownOpen(false);
-      }
+
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -138,7 +136,7 @@ function HeaderContent() {
               >
                 About
               </button>
-              {aboutDropdownOpen && <AboutDropdown onClose={() => setAboutDropdownOpen(false)} />}
+              <AboutDropdown isOpen={aboutDropdownOpen} onClose={() => setAboutDropdownOpen(false)} />
             </div>
 
             <Link 

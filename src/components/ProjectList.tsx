@@ -1,7 +1,7 @@
 'use client';
 
 import { useProjects } from '@/hooks/useProjects';
-import { FaCheckCircle, FaArchive } from 'react-icons/fa';
+import { FaCheckCircle, FaArchive, FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 import { MdOutlinePending } from 'react-icons/md';
 
 export default function ProjectList() {
@@ -15,7 +15,7 @@ export default function ProjectList() {
       {projects.map((project) => (
         <div
           key={project.id}
-          className="flex flex-col border border-black/20 rounded-xl shadow-sm hover:shadow-xl bg-white transition-all duration-300 overflow-hidden"
+          className="group relative flex flex-col rounded-2xl border border-white/20 bg-black/20 backdrop-blur-lg shadow-lg transition-all duration-300 hover:shadow-2xl hover:border-white/30 overflow-hidden"
         >
           {/* Ảnh dự án */}
           {project.featured_image_url && (
@@ -29,14 +29,40 @@ export default function ProjectList() {
           {/* Nội dung */}
           <div className="flex flex-col flex-1 p-5">
             {/* Tiêu đề */}
-            <h3 className="text-xl font-bold text-black mb-2">
+            <h3 className="text-xl font-bold text-white mb-2">
               {project.title}
             </h3>
 
             {/* Mô tả */}
-            <p className="text-gray-700 line-clamp-3">
+            <p className="text-gray-300 line-clamp-3 flex-grow">
               {project.short_description}
             </p>
+
+            {/* Links */}
+            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-white/20">
+              {project.demo_url && (
+                <a
+                  href={project.demo_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+                >
+                  <FaExternalLinkAlt />
+                  <span>Demo</span>
+                </a>
+              )}
+              {project.github_url && (
+                <a
+                  href={project.github_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+                >
+                  <FaGithub />
+                  <span>GitHub</span>
+                </a>
+              )}
+            </div>
 
             {/* Trạng thái với icon */}
             <div className="flex items-center gap-2 mt-3">
@@ -63,29 +89,6 @@ export default function ProjectList() {
               </span>
             </div>
 
-            {/* Nút hành động */}
-            <div className="mt-5 flex gap-3">
-              {project.demo_url && (
-                <a
-                  href={project.demo_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 text-center px-4 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
-                >
-                  Xem Demo
-                </a>
-              )}
-              {project.github_url && (
-                <a
-                  href={project.github_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 text-center px-4 py-2 rounded-lg border border-red-600 text-red-600 font-medium hover:bg-red-50 transition-colors"
-                >
-                  GitHub
-                </a>
-              )}
-            </div>
           </div>
         </div>
       ))}

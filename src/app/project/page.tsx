@@ -4,15 +4,7 @@ import ProjectList from "@/components/ProjectList";
 export default function ProjectPage() {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Title + mô tả */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
-          My <span className="text-red-600">Projects</span>
-        </h1>
-        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          Explore the projects I've worked on. Use the filters to navigate through different technologies and categories.
-        </p>
-      </div>
+
 
       {/* Search Bar */}
       <div className="mb-8">
