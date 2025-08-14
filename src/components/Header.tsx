@@ -256,7 +256,7 @@ function HeaderContent() {
             {[
               { href: '/about', label: 'About', dropdown: true },
               { href: '/project', label: 'Project' },
-              { href: '/service', label: 'Service' },
+              { href: '/service', label: 'Services' },
               { href: '/contact', label: 'Contact' },
             ].map((item) =>
               item.dropdown ? (
