@@ -76,18 +76,14 @@ export default function Home() {
           <span className="inline-block px-4 py-2 bg-gradient-to-r from-gray-900/10 to-black/10 text-gray-800 rounded-full text-sm font-medium border border-gray-300/50 mb-4">
             What I Do Best
           </span>
-          <h2 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-black mb-6">
+          <h2 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-black">
             My Skills
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            A comprehensive toolkit of modern technologies and frameworks
-          </p>
         </div>
 
         <div className="relative">
           {/* Background decoration */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-gray-50 to-white rounded-3xl shadow-xl border border-gray-200/50"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-red-600/5 via-transparent to-gray-900/5 rounded-3xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/30 to-black/30 rounded-3xl shadow-xl "></div>
           
           <div className="relative p-8 md:p-12">
             <SkillList />
