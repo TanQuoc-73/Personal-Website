@@ -11,6 +11,17 @@ export async function getAllProjects() {
   return { data, error };
 }
 
+export async function getProjects(categoryId?: string) {
+  if (categoryId) {
+    return getProjectsByCategory(categoryId);
+  }
+
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*');
+
+  return { data, error };
+}
 export async function getProjectById(id: string) {
   const { data, error } = await supabase
     .from('projects')
@@ -49,4 +60,12 @@ export async function deleteProject(id: string) {
     .eq('id', id);
 
   return { error };
+}
+export async function getProjectsByCategory(categoryId: string) {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('category_id', categoryId);
+
+  return { data, error };
 }
