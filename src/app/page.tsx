@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen">
       {/* Hero Section */}
-      <section className="w-full flex flex-col lg:flex-row items-center justify-center lg:justify-between py-20 px-4 sm:px-6 lg:px-8 min-h-screen relative overflow-hidden">
+      <section className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-center lg:justify-between py-20 px-4 sm:px-6 lg:px-8 min-h-screen relative overflow-hidden">
         {/* Background decorative elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-red-500/5 rounded-full blur-3xl"></div>
@@ -105,10 +105,9 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
-          <ProjectList/>
-        </div>
+        <ProjectList />
       </section>
+
 
       {/* Contact Section */}
       <section id="contact" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 mb-16">
