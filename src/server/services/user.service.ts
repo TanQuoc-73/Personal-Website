@@ -5,13 +5,15 @@ export interface UserProfile {
   id: string;
   email: string | null;
   name?: string | null;
-  // thêm các trường khác nếu có
+  role?: string | null;
+  avatar_url?: string | null;
+  // thêm các trường khác nếu cần
 }
 
 export async function getUserProfile(userId: string): Promise<{ data: UserProfile | null; error: Error | null }> {
   const { data, error } = await supabase
     .from<UserProfile>('users')
-    .select('*')
+    .select('id, email, full_name as name, role, avatar_url')
     .eq('id', userId)
     .single();
 

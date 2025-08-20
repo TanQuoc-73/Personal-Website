@@ -168,7 +168,7 @@ function HeaderContent() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const pathname = usePathname();
 
   const isActive = (path: string) => pathname === path;
@@ -202,6 +202,8 @@ function HeaderContent() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
+  const isAdmin = profile?.role === 'admin';
+
   return (
     <>
       <div
@@ -234,11 +236,24 @@ function HeaderContent() {
                   {!isActive(href) && <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-700 transition-all duration-300 group-hover:w-full"></span>}
                 </Link>
               ))}
+
+              {/* Show admin nav only if role is admin */}
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className={`relative group transition-all duration-300 ${
+                    isActive('/admin') ? 'text-white font-semibold' : 'text-gray-300 hover:text-white'
+                  }`}
+                >
+                  Admin
+                  <TopFireHighlight isActive={isActive('/admin')} />
+                </Link>
+              )}
             </div>
             <div className="flex items-center gap-4">
               {user && (
                 <span className="bg-gradient-to-r from-gray-800/80 to-gray-900/80 py-1.5 px-4 rounded-full text-sm text-gray-200 border border-gray-700/50 shadow-lg truncate max-w-[150px]">
-                  {user.email}
+                  {user.user_metadata?.name ?? user.email}
                 </span>
               )}
             </div>
