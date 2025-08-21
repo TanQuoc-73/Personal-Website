@@ -15,16 +15,6 @@ export function ProjectForm({ onClose }: { onClose: () => void }) {
     short_description: '',
     status: 'in-progress' as const,
     is_featured: false,
-    featured_image_url: '',
-    demo_url: '',
-    github_url: '',
-    category_id: '',
-    sort_order: 0,
-    start_date: '',
-    end_date: '',
-    content: '',
-    view_count: 0,
-    like_count: 0
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -141,92 +131,7 @@ export function ProjectForm({ onClose }: { onClose: () => void }) {
         </Label>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        <div>
-          <Label htmlFor="featured_image_url">Ảnh đại diện (URL)</Label>
-          <Input
-            id="featured_image_url"
-            name="featured_image_url"
-            type="url"
-            value={formData.featured_image_url}
-            onChange={handleChange}
-            className="mt-1"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="demo_url">URL Demo</Label>
-          <Input
-            id="demo_url"
-            name="demo_url"
-            type="url"
-            value={formData.demo_url}
-            onChange={handleChange}
-            className="mt-1"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="github_url">GitHub URL</Label>
-          <Input
-            id="github_url"
-            name="github_url"
-            type="url"
-            value={formData.github_url}
-            onChange={handleChange}
-            className="mt-1"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="category_id">Danh mục</Label>
-          <Input
-            id="category_id"
-            name="category_id"
-            value={formData.category_id}
-            onChange={handleChange}
-            className="mt-1"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="start_date">Ngày bắt đầu</Label>
-          <Input
-            id="start_date"
-            name="start_date"
-            type="date"
-            value={formData.start_date}
-            onChange={handleChange}
-            className="mt-1"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="end_date">Ngày kết thúc</Label>
-          <Input
-            id="end_date"
-            name="end_date"
-            type="date"
-            value={formData.end_date}
-            onChange={handleChange}
-            className="mt-1"
-          />
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <Label htmlFor="content">Nội dung chi tiết</Label>
-        <Textarea
-          id="content"
-          name="content"
-          value={formData.content}
-          onChange={handleChange}
-          className="mt-1 min-h-[200px]"
-          rows={8}
-        />
-      </div>
-
-      <div className="flex justify-end space-x-3 pt-4 mt-6 border-t border-gray-200">
+      <div className="flex justify-end space-x-3 pt-4">
         <Button type="button" variant="outline" onClick={onClose}>
           Hủy
         </Button>

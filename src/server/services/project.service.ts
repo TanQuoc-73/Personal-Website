@@ -81,7 +81,7 @@ export async function getProjectById(id: string) {
 // TẠO PROJECT MỚI
 // =============================
 export async function createProject(
-  newProject: Omit<Project, 'id' | 'created_at' | 'updated_at'>
+  newProject: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'view_count' | 'like_count'>
 ) {
   const { data, error } = await supabase
     .from('projects')

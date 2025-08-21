@@ -30,6 +30,7 @@ const ProjectBaseSchema = z.object({
 // Schema cho tạo mới Project
 export const CreateProjectSchema = ProjectBaseSchema.omit({
   view_count: true,
+  like_count: true
 });
 
 // Schema cho cập nhật Project
