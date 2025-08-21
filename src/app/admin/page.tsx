@@ -1,17 +1,19 @@
-// src/app/page.tsx
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import ProjectList from '@/components/ProjectList';
 import SkillList from '@/components/SkillList';
+import { Modal } from '@/components/ui/modal';
+import { ProjectForm } from '@/components/admin/ProjectForm';
 
 export default function AdminPage() {
   const { profile } = useAuth();
   const router = useRouter();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     // Redirect non-admin users away from admin UI
@@ -82,32 +84,38 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Projects management */}
-            <div id="projects" className="rounded-2xl p-6 bg-black/30 border border-white/10">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white">Projects</h2>
-                <div className="flex items-center gap-2">
-                  <Link href="/admin/projects/new">
-                    <Button variant="default">Create Project</Button>
-                  </Link>
-                </div>
-              </div>
-
-              <ProjectList />
-            </div>
-
-            {/* Skills management */}
-            <div id="skills" className="rounded-2xl p-6 bg-black/30 border border-white/10">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white">Skills</h2>
+            <div className="container mx-auto px-4 py-8">
+              <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <Link href="/admin/skills/new">
-                    <Button variant="default">Create Skill</Button>
-                  </Link>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-semibold">Dự án</h2>
+                    <Button onClick={() => setIsCreateModalOpen(true)}>
+                      Tạo dự án mới
+                    </Button>
+                  </div>
+                  <ProjectList adminView={true} />
+                </div>
+                
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-semibold">Kỹ năng</h2>
+                    <Link href="/admin/skills/new">
+                      <Button>Thêm kỹ năng</Button>
+                    </Link>
+                  </div>
+                  <SkillList adminView={true} />
                 </div>
               </div>
 
-              <SkillList />
+              <Modal 
+                isOpen={isCreateModalOpen} 
+                onClose={() => setIsCreateModalOpen(false)}
+                title="Tạo dự án mới"
+              >
+                <ProjectForm onClose={() => setIsCreateModalOpen(false)} />
+              </Modal>
             </div>
 
             {/* Placeholder sections */}

@@ -1,25 +1,112 @@
 // src/app/api/projects/[id]/route.ts
 import { NextResponse } from 'next/server';
 import { getProjectById, updateProject, deleteProject } from '@/server/services/project.service';
+import { ProjectIdSchema, UpdateProjectSchema } from '@/validations/project.validation';
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
-  const { data, error } = await getProjectById(params.id);
-  if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  // Validate project ID
+  const idValidation = ProjectIdSchema.safeParse(params.id);
+  if (!idValidation.success) {
+    return NextResponse.json(
+      { success: false, error: 'ID dự án không hợp lệ' },
+      { status: 400 }
+    );
+  }
 
-  return NextResponse.json({ success: true, data });
+  try {
+    const { data, error } = await getProjectById(idValidation.data);
+    
+    if (error) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.message.includes('not found') ? 404 : 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data });
+  } catch (error) {
+    console.error('Error fetching project:', error);
+    return NextResponse.json(
+      { success: false, error: 'Đã xảy ra lỗi khi lấy thông tin dự án' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
-  const body = await req.json();
-  const { data, error } = await updateProject(params.id, body);
-  if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  // Validate project ID
+  const idValidation = ProjectIdSchema.safeParse(params.id);
+  if (!idValidation.success) {
+    return NextResponse.json(
+      { success: false, error: 'ID dự án không hợp lệ' },
+      { status: 400 }
+    );
+  }
 
-  return NextResponse.json({ success: true, data });
+  try {
+    const body = await req.json();
+    
+    // Validate request body
+    const validation = UpdateProjectSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Dữ liệu cập nhật không hợp lệ', 
+          details: validation.error.format() 
+        },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await updateProject(idValidation.data, validation.data);
+    
+    if (error) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.message.includes('not found') ? 404 : 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data });
+  } catch (error) {
+    console.error('Error updating project:', error);
+    return NextResponse.json(
+      { success: false, error: 'Đã xảy ra lỗi khi cập nhật dự án' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function DELETE(_: Request, { params }: { params: { id: string } }) {
-  const { error } = await deleteProject(params.id);
-  if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  // Validate project ID
+  const idValidation = ProjectIdSchema.safeParse(params.id);
+  if (!idValidation.success) {
+    return NextResponse.json(
+      { success: false, error: 'ID dự án không hợp lệ' },
+      { status: 400 }
+    );
+  }
 
-  return NextResponse.json({ success: true });
+  try {
+    const { error } = await deleteProject(idValidation.data);
+    
+    if (error) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.message.includes('not found') ? 404 : 500 }
+      );
+    }
+
+    return NextResponse.json({ 
+      success: true,
+      message: 'Xóa dự án thành công' 
+    });
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    return NextResponse.json(
+      { success: false, error: 'Đã xảy ra lỗi khi xóa dự án' },
+      { status: 500 }
+    );
+  }
 }

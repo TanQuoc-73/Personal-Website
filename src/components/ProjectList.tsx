@@ -10,7 +10,7 @@ type Props = {
   categories?: { id: string; name: string }[];
 };
 
-export default function ProjectList({ initialFilters = {}, categories = [] }: Props) {
+export default function ProjectList({ initialFilters = {}, categories = [], showAdminActions = false }: Props & { showAdminActions?: boolean }) {
   // Manage filters internally
   const [search, setSearch] = useState<string>(initialFilters.search ?? '');
   const [categoryId, setCategoryId] = useState<string | undefined>(initialFilters.categoryId);
@@ -165,6 +165,33 @@ export default function ProjectList({ initialFilters = {}, categories = [] }: Pr
                       {project.status.replace('-', ' ')}
                     </span>
                   </div>
+
+                  {showAdminActions && (
+                    <div className="flex items-center gap-2 mt-4">
+                      <a
+                        href={`/admin/projects/${project.id}`}
+                        className="px-3 py-1 rounded border border-white/20 text-white/90 bg-white/5 hover:bg-white/10"
+                      >
+                        Edit
+                      </a>
+                      <button
+                        className="px-3 py-1 rounded border border-red-500 text-red-400 bg-red-800/10 hover:bg-red-800/20"
+                        onClick={async () => {
+                          if (!confirm('Delete this project?')) return;
+                          try {
+                            const res = await fetch(`/api/projects/${project.id}`, { method: 'DELETE' });
+                            if (!res.ok) throw new Error('Delete failed');
+                            // simple refresh
+                            window.location.reload();
+                          } catch (e) {
+                            alert((e as any).message ?? 'Delete failed');
+                          }
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

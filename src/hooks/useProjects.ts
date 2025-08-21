@@ -1,55 +1,197 @@
 // src/hooks/useProjects.ts
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Project } from '@/types/project';
+import type { CreateProjectInput, ProjectFilter, UpdateProjectInput } from '@/validations/project.validation';
 
-export type ProjectsQuery = {
-  categoryId?: string;
-  status?: string; // 'completed' | 'in-progress' | 'archived'
-  search?: string;
-  isFeatured?: boolean;
-  sortBy?: 'created_at' | 'sort_order' | 'view_count' | 'like_count';
-  sortOrder?: 'asc' | 'desc';
+type ApiResponse<T> = {
+  success: boolean;
+  data?: T;
+  error?: string;
+  details?: any;
+  count?: number;
   page?: number;
   limit?: number;
 };
+
+export type ProjectsQuery = ProjectFilter;
 
 export function useProjects(filters: ProjectsQuery = {}) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<null | string>(null);
-  const [count, setCount] = useState<number | undefined>(undefined);
+  const [count, setCount] = useState<number>(0);
+  const [pagination, setPagination] = useState({
+    page: filters.page || 1,
+    limit: filters.limit || 10,
+    totalPages: 0,
+  });
 
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (filters.categoryId) params.set('categoryId', filters.categoryId);
-    if (filters.status) params.set('status', filters.status);
-    if (filters.search) params.set('search', filters.search);
-    if (typeof filters.isFeatured === 'boolean') params.set('isFeatured', String(filters.isFeatured));
-    if (filters.sortBy) params.set('sortBy', filters.sortBy);
-    if (filters.sortOrder) params.set('sortOrder', filters.sortOrder);
-    if (typeof filters.page === 'number') params.set('page', String(filters.page));
-    if (typeof filters.limit === 'number') params.set('limit', String(filters.limit));
+  // Hàm tạo URL với query params
+  const buildUrl = useCallback((baseUrl: string, params: Record<string, any> = {}) => {
+    const url = new URL(baseUrl, window.location.origin);
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        url.searchParams.append(key, String(value));
+      }
+    });
+    return url.toString();
+  }, []);
 
-    const url = params.toString() ? `/api/projects?${params.toString()}` : '/api/projects';
+  // Hàm xử lý lỗi API
+  const handleApiError = (error: any, defaultMessage: string) => {
+    console.error('API Error:', error);
+    const errorMessage = error?.message || error?.error || defaultMessage;
+    setError(errorMessage);
+    return { success: false, error: errorMessage };
+  };
 
+  // Lấy danh sách projects
+  const fetchProjects = useCallback(async (customFilters: ProjectsQuery = {}) => {
     setIsLoading(true);
     setError(null);
+    
+    try {
+      const mergedFilters = { ...filters, ...customFilters };
+      const url = buildUrl('/api/projects', mergedFilters);
+      
+      const response = await fetch(url);
+      const result: ApiResponse<Project[]> = await response.json();
+      
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Không thể tải danh sách dự án');
+      }
+      
+      setProjects(result.data || []);
+      setCount(result.count || 0);
+      
+      if (result.page && result.limit) {
+        setPagination(prev => ({
+          ...prev,
+          page: result.page!,
+          limit: result.limit!,
+          totalPages: Math.ceil((result.count || 0) / result.limit!)
+        }));
+      }
+      
+      return { success: true, data: result.data };
+    } catch (error) {
+      return handleApiError(error, 'Đã xảy ra lỗi khi tải danh sách dự án');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [filters, buildUrl]);
 
-    fetch(url)
-      .then((res) => res.json())
-      .then((res) => {
-        setProjects(res.data || []);
-        setCount(res.count);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setError('Failed to fetch projects');
-        setIsLoading(false);
+  // Tạo mới project
+  const createProject = async (projectData: CreateProjectInput) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(projectData),
       });
-    // Stringify filters to track changes shallowly
-  }, [JSON.stringify(filters)]);
+      
+      const result: ApiResponse<Project> = await response.json();
+      
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Không thể tạo dự án mới');
+      }
+      
+      // Làm mới danh sách sau khi tạo
+      await fetchProjects();
+      return { success: true, data: result.data };
+    } catch (error) {
+      return handleApiError(error, 'Đã xảy ra lỗi khi tạo dự án');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  return { projects, isLoading, error, count };
+  // Cập nhật project
+  const updateProject = async (id: string, updates: UpdateProjectInput) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`/api/projects/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      
+      const result: ApiResponse<Project> = await response.json();
+      
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Không thể cập nhật dự án');
+      }
+      
+      // Cập nhật danh sách sau khi cập nhật
+      setProjects(prev => 
+        prev.map(project => 
+          project.id === id ? { ...project, ...result.data } : project
+        )
+      );
+      
+      return { success: true, data: result.data };
+    } catch (error) {
+      return handleApiError(error, 'Đã xảy ra lỗi khi cập nhật dự án');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Xóa project
+  const deleteProject = async (id: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`/api/projects/${id}`, {
+        method: 'DELETE',
+      });
+      
+      const result: ApiResponse<void> = await response.json();
+      
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Không thể xóa dự án');
+      }
+      
+      // Cập nhật danh sách sau khi xóa
+      setProjects(prev => prev.filter(project => project.id !== id));
+      setCount(prev => prev - 1);
+      
+      return { success: true };
+    } catch (error) {
+      return handleApiError(error, 'Đã xảy ra lỗi khi xóa dự án');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Lấy danh sách khi filters thay đổi
+  useEffect(() => {
+    fetchProjects(filters);
+  }, [fetchProjects, JSON.stringify(filters)]);
+
+  return {
+    // State
+    projects,
+    isLoading,
+    error,
+    count,
+    pagination,
+    
+    // Actions
+    fetchProjects,
+    createProject,
+    updateProject,
+    deleteProject,
+    
+    // Helpers
+    refetch: () => fetchProjects(filters),
+  };
 }
