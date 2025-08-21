@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -17,7 +17,6 @@ const TopFireHighlight = ({ isActive }: { isActive: boolean }) => {
     <div className="absolute inset-0 pointer-events-none">
       {/* Nền flicker đỏ tối */}
       <div className="absolute -bottom-1 left-0 right-0 h-[5px] flame-flicker rounded-full"></div>
-      {/* Các hạt lửa bay lên */}
       {[...Array(12)].map((_, i) => (
         <div
           key={i}
@@ -170,8 +169,16 @@ function HeaderContent() {
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, profile } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
 
   const isActive = (path: string) => pathname === path;
+
+  // Redirect admin to dashboard
+  useEffect(() => {
+    if (profile?.role === 'admin') {
+      router.replace('/admin');
+    }
+  }, [profile?.role, router]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -237,7 +244,7 @@ function HeaderContent() {
                 </Link>
               ))}
 
-              {/* Show admin nav only if role is admin */}
+              {/* Admin nav if admin */}
               {isAdmin && (
                 <Link
                   href="/admin"
