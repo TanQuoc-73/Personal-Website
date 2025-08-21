@@ -25,17 +25,9 @@ export default function AdminPage() {
   return (
     <main className="min-h-screen bg-transparent py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-            Admin Dashboard
-          </h1>
-          <p className="text-gray-400">
-            Manage content, projects, skills and contact messages.
-          </p>
-        </div>
+        
 
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8 mt-7">
           {/* Sidebar - Responsive */}
           <aside className="xl:col-span-1">
             <div className="bg-black/50 backdrop-blur border border-white/10 rounded-2xl p-6 sticky top-24">
@@ -169,7 +161,7 @@ export default function AdminPage() {
                     Create New
                   </Button>
                 </div>
-                <ProjectList adminView={true} />
+                <ProjectList showAdminActions={true} />
               </div>
             </div>
 

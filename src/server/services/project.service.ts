@@ -83,13 +83,41 @@ export async function getProjectById(id: string) {
 export async function createProject(
   newProject: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'view_count' | 'like_count'>
 ) {
-  const { data, error } = await supabase
-    .from('projects')
-    .insert(newProject)
-    .select()
-    .single();
+  try {
+    console.log('Creating project with data:', newProject);
+    
+    // Ensure required fields are present
+    const requiredFields = ['title', 'slug', 'status'];
+    const missingFields = requiredFields.filter(field => !newProject[field as keyof typeof newProject]);
+    
+    if (missingFields.length > 0) {
+      throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+    }
+    
+    const { data, error } = await supabase
+      .from('projects')
+      .insert({
+        ...newProject,
+        // Ensure proper types for database
+        sort_order: Number(newProject.sort_order) || 0,
+        is_featured: Boolean(newProject.is_featured),
+      })
+      .select()
+      .single();
 
-  return { data, error };
+    if (error) {
+      console.error('Supabase error:', error);
+      throw new Error(error.message || 'Lỗi khi lưu dự án vào cơ sở dữ liệu');
+    }
+
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error in createProject:', error);
+    return { 
+      data: null, 
+      error: error instanceof Error ? error : new Error('Lỗi không xác định khi tạo dự án')
+    };
+  }
 }
 
 // =============================

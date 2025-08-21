@@ -1,42 +1,168 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ProjectStatusSchema } from '@/validations/project.validation';
+import type { Project } from '@/types/project';
 
-export function ProjectForm({ onClose }: { onClose: () => void }) {
+interface ProjectFormProps {
+  onClose: () => void;
+  initialData?: Project | null;
+  onSuccess?: () => void;
+}
+
+export function ProjectForm({ onClose, initialData, onSuccess }: ProjectFormProps) {
+  type ProjectStatus = z.infer<typeof ProjectStatusSchema>;
+  
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
     description: '',
     short_description: '',
-    status: 'in-progress' as const,
+    status: 'in-progress' as ProjectStatus,
     is_featured: false,
+    sort_order: 0,
+    // Removed like_count as it's managed by the server
+    github_url: '',
+    demo_url: '',
+    featured_image_url: '',
+    content: '',
+    category_id: '',
+    start_date: '',
+    end_date: '',
+    client: '',
+    budget_range: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const isEditMode = !!initialData?.id;
+
+  // Load initial data when in edit mode
+  useEffect(() => {
+    if (initialData) {
+      const { like_count, ...initialDataWithoutLikeCount } = initialData;
+      setFormData({
+        title: initialData.title,
+        slug: initialData.slug,
+        description: initialData.description || '',
+        short_description: initialData.short_description || '',
+        status: initialData.status || 'in-progress',
+        is_featured: initialData.is_featured || false,
+        sort_order: initialData.sort_order || 0,
+        // Removed like_count as it's managed by the server
+        github_url: initialData.github_url || '',
+        demo_url: initialData.demo_url || '',
+        featured_image_url: initialData.featured_image_url || '',
+        content: initialData.content || '',
+        category_id: initialData.category_id || '',
+        start_date: initialData.start_date || '',
+        end_date: initialData.end_date || '',
+        client: initialData.client || '',
+        budget_range: initialData.budget_range || ''
+      });
+    }
+  }, [initialData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Xử lý submit form ở đây
-    console.log('Form submitted:', formData);
-    // Gọi API để tạo dự án mới
+    setIsLoading(true);
+    setError(null);
+
     try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
+      const url = isEditMode 
+        ? `/api/projects/${initialData.id}` 
+        : '/api/projects';
+      
+      const method = isEditMode ? 'PUT' : 'POST';
+      
+      // Log dữ liệu trước khi gửi để debug
+      console.log('Submitting form data:', formData);
+      
+      // Only include fields that are defined in CreateProjectSchema
+      const formDataForSubmission: Record<string, any> = {};
+      
+      // Required fields
+      formDataForSubmission.title = formData.title;
+      formDataForSubmission.slug = formData.slug;
+      formDataForSubmission.status = formData.status;
+      
+      // Optional fields with proper type conversion
+      if (formData.description) formDataForSubmission.description = formData.description;
+      if (formData.short_description) formDataForSubmission.short_description = formData.short_description;
+      if (formData.content) formDataForSubmission.content = formData.content;
+      if (formData.github_url) formDataForSubmission.github_url = formData.github_url;
+      if (formData.demo_url) formDataForSubmission.demo_url = formData.demo_url;
+      if (formData.featured_image_url) formDataForSubmission.featured_image_url = formData.featured_image_url;
+      if (formData.category_id) formDataForSubmission.category_id = formData.category_id;
+      if (formData.client) formDataForSubmission.client = formData.client;
+      if (formData.budget_range) formDataForSubmission.budget_range = formData.budget_range;
+      
+      // Convert dates to ISO string if they exist
+      if (formData.start_date) {
+        formDataForSubmission.start_date = new Date(formData.start_date).toISOString();
+      }
+      if (formData.end_date) {
+        formDataForSubmission.end_date = new Date(formData.end_date).toISOString();
+      }
+      
+      // Boolean and number fields with defaults
+      formDataForSubmission.is_featured = Boolean(formData.is_featured);
+      formDataForSubmission.sort_order = Number(formData.sort_order) || 0;
+      
+      console.log('Sending data to server:', JSON.stringify(formDataForSubmission, null, 2));
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formDataForSubmission),
       });
       
-      if (response.ok) {
-        onClose();
-        // Có thể thêm thông báo thành công ở đây
+      const responseData = await response.json();
+      console.log('API Response:', responseData);
+      
+      if (!response.ok) {
+        // Nếu có thông báo lỗi từ server, hiển thị nó
+        if (responseData.error) {
+          throw new Error(`Lỗi từ server: ${responseData.error}`);
+        }
+        // Nếu không có thông báo lỗi cụ thể, sử dụng mã trạng thái
+        throw new Error(`Lỗi HTTP: ${response.status} - ${response.statusText}`);
       }
+      
+      onClose();
+      if (onSuccess) onSuccess();
+      
     } catch (error) {
-      console.error('Error creating project:', error);
+      console.error('Error saving project:', error);
+      // Hiển thị thông báo lỗi chi tiết hơn
+      let errorMessage = 'Có lỗi xảy ra khi lưu dự án';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        // Xử lý các lỗi phổ biến
+        if (error.message.includes('NetworkError')) {
+          errorMessage = 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng.';
+        } else if (error.message.includes('400')) {
+          errorMessage = 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin đã nhập.';
+        } else if (error.message.includes('401') || error.message.includes('403')) {
+          errorMessage = 'Bạn không có quyền thực hiện thao tác này. Vui lòng đăng nhập lại.';
+        } else if (error.message.includes('404')) {
+          errorMessage = 'Không tìm thấy tài nguyên yêu cầu.';
+        } else if (error.message.includes('500')) {
+          errorMessage = 'Lỗi máy chủ nội bộ. Vui lòng thử lại sau.';
+        }
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -89,15 +215,53 @@ export function ProjectForm({ onClose }: { onClose: () => void }) {
       </div>
 
       <div>
-        <Label htmlFor="description">Mô tả đầy đủ</Label>
+        <Label htmlFor="description">Mô tả đầy đủ (Markdown được hỗ trợ)</Label>
         <Textarea
           id="description"
           name="description"
           value={formData.description}
           onChange={handleChange}
-          className="mt-1"
-          rows={5}
+          className="mt-1 font-mono min-h-[200px]"
+          placeholder="Mô tả chi tiết về dự án..."
         />
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="github_url">URL GitHub</Label>
+          <Input
+            id="github_url"
+            name="github_url"
+            type="url"
+            value={formData.github_url || ''}
+            onChange={handleChange}
+            placeholder="https://github.com/username/repo"
+          />
+        </div>
+        <div>
+          <Label htmlFor="demo_url">URL Demo</Label>
+          <Input
+            id="demo_url"
+            name="demo_url"
+            type="url"
+            value={formData.demo_url || ''}
+            onChange={handleChange}
+            placeholder="https://example.com/demo"
+          />
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="sort_order">Thứ tự sắp xếp</Label>
+          <Input
+            id="sort_order"
+            name="sort_order"
+            type="number"
+            value={formData.sort_order}
+            onChange={handleChange}
+          />
+        </div>
       </div>
 
       <div>
@@ -131,11 +295,33 @@ export function ProjectForm({ onClose }: { onClose: () => void }) {
         </Label>
       </div>
 
+      {error && (
+        <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
+      
       <div className="flex justify-end space-x-3 pt-4">
-        <Button type="button" variant="outline" onClick={onClose}>
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onClose}
+          disabled={isLoading}
+        >
           Hủy
         </Button>
-        <Button type="submit">Tạo dự án</Button>
+        <Button 
+          type="submit"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <span>Đang lưu...</span>
+          ) : isEditMode ? (
+            'Cập nhật dự án'
+          ) : (
+            'Tạo dự án'
+          )}
+        </Button>
       </div>
     </form>
   );

@@ -49,11 +49,23 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     
-    // Validate request body
+    // Log the incoming request body for debugging
+    console.log('Incoming request body:', JSON.stringify(body, null, 2));
+    
+    // First validate the request body
     const validation = CreateProjectSchema.safeParse(body);
+    
+    // If there are validation errors, return them
     if (!validation.success) {
+      // Extract field names that caused validation to fail
+      const errorFields = validation.error.issues.map(issue => issue.path[0]);
+      console.warn('Validation failed for fields:', errorFields);
       return NextResponse.json(
-        { success: false, error: 'Dữ liệu không hợp lệ', details: validation.error.format() },
+        { 
+          success: false, 
+          error: 'Dữ liệu không hợp lệ',
+          details: validation.error.format() 
+        },
         { status: 400 }
       );
     }

@@ -4,7 +4,11 @@
 import { useSkills } from '@/hooks/useSkills';
 import { useState, useEffect } from 'react';
 
-export default function SkillList() {
+interface SkillListProps {
+  adminView?: boolean;
+}
+
+export default function SkillList({ adminView = false }: SkillListProps) {
   const { skills, isLoading, error } = useSkills();
   const [visibleSkills, setVisibleSkills] = useState<number[]>([]);
 
