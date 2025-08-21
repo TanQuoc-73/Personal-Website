@@ -4,6 +4,7 @@ import "./globals.css";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { AuthProvider } from '@/context/AuthContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,13 +29,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} bg-custom antialiased`}>
-        <Header />
-        <div className="w-full min-h-screen">
-          {children}
-        </div>
-        <Footer />
-        
-      
+        <AuthProvider>
+          <Header />
+          <div className="w-full min-h-screen">
+            {children}
+          </div>
+          <Footer />
+        </AuthProvider>
       </body>
 
 
