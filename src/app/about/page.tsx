@@ -35,7 +35,7 @@ export default function AboutPage() {
               width={160}
               height={160}
             />
-            <h1 className="text-5xl font-extrabold text-red-400">Hello, I'm Duong Quoc Tan</h1>
+            <h1 className="text-5xl font-extrabold text-red-400">Hello, I&apos;m Duong Quoc Tan</h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">
               A passionate software developer who loves building beautiful and useful web applications.
             </p>
@@ -74,9 +74,9 @@ export default function AboutPage() {
 
         {/* Call to Action */}
         <section className="bg-black/50 backdrop-blur-md p-12 rounded-xl border border-red-500/30 text-center shadow-lg">
-          <h2 className="text-3xl font-bold mb-4 text-red-400">Let's Connect!</h2>
+          <h2 className="text-3xl font-bold mb-4 text-red-400">Let&apos;s Connect!</h2>
           <p className="max-w-2xl mx-auto text-lg text-gray-300 mb-8">
-            I'm always open to discussing collaboration opportunities, new projects, or simply sharing knowledge. Don't hesitate to reach out!
+            I&apos;m always open to discussing collaboration opportunities, new projects, or simply sharing knowledge. Don&apos;t hesitate to reach out!
           </p>
           <div className="flex justify-center items-center space-x-6 mb-8">
             <Link href="#" className="hover:text-red-400 transition-colors"><FaGithub size={30} /></Link>

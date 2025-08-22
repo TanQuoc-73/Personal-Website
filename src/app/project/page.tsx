@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import ProjectList from '@/components/ProjectList';
+import { Category } from '@/types/categories';
 
-type Category = {
-  id: string;
-  name: string;
-};
+// type Category = {
+//   id: string;
+//   name: string;
+// };
 
 export default function ProjectPage() {
   const [search, setSearch] = useState('');

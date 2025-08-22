@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 const PortfolioPage = () => {
   const pdfUrl = '/resume.pdf'; // Place your resume.pdf in the /public folder
@@ -30,9 +31,9 @@ const PortfolioPage = () => {
         </div>
 
         <div className="text-center">
-            <a href="/" className="text-purple-400 hover:text-pink-500 transition-colors duration-300">
+            <Link href="/" className="text-purple-400 hover:text-pink-500 transition-colors duration-300">
                 &larr; Back to Home
-            </a>
+            </Link>
         </div>
       </div>
     </div>

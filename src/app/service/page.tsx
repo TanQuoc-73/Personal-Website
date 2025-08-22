@@ -58,7 +58,7 @@ export default function ServicePage() {
           My <span className="text-red-500">Services</span>
         </h1>
         <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-          I offer a range of services to help you achieve your goals. Let's build something great together.
+          I offer a range of services to help you achieve your goals. Let&apos;s build something great together.
         </p>
       </div>
 

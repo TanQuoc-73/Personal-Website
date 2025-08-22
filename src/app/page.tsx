@@ -148,13 +148,13 @@ export default function Home() {
           <div className="relative text-center py-20 px-8">
             <div className="mb-8">
               <span className="inline-block px-4 py-2 bg-red-600/10 text-red-600 rounded-full text-sm font-medium border border-red-600/20 mb-6">
-                Let's Connect
+                Let&apos;s Connect
               </span>
               <h2 className="text-4xl md:text-5xl font-black mb-6">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-700">Get in Touch</span>
               </h2>
               <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-                Ready to bring your ideas to life? Let's discuss your next project and create something amazing together.
+                Ready to bring your ideas to life? Let&apos;s discuss your next project and create something amazing together.
               </p>
             </div>
             

@@ -232,7 +232,7 @@ function HeaderContent() {
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-4">
               <a 
-                href="https://github.com/yourusername" 
+                href="https://github.com/TanQuoc-73" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-gray-300 hover:text-white transition-all duration-300 group"
@@ -241,7 +241,7 @@ function HeaderContent() {
                 <FaGithub className="w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
               </a>
               <a 
-                href="https://facebook.com/yourusername" 
+                href="https://www.facebook.com/tan.duongquoc.16/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-gray-300 hover:text-white transition-all duration-300 group"
