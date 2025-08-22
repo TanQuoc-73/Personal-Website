@@ -2,12 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getProjectById, updateProject, deleteProject } from '@/server/services/project.service';
 import { ProjectIdSchema, UpdateProjectSchema } from '@/validations/project.validation';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  // Validate project ID
-  const idValidation = ProjectIdSchema.safeParse(params.id);
+function extractIdFromRequest(request: NextRequest): string | undefined {
+  const pathname = request.nextUrl.pathname;
+  const parts = pathname.split('/');
+  return parts[parts.length - 1];
+}
+
+export async function GET(request: NextRequest) {
+  const id = extractIdFromRequest(request);
+
+  const idValidation = ProjectIdSchema.safeParse(id);
   if (!idValidation.success) {
     return NextResponse.json(
       { success: false, error: 'ID dự án không hợp lệ' },
@@ -17,12 +21,14 @@ export async function GET(
 
   try {
     const { data, error } = await getProjectById(idValidation.data);
+
     if (error) {
       return NextResponse.json(
         { success: false, error: error.message },
         { status: error.message.includes('not found') ? 404 : 500 }
       );
     }
+
     return NextResponse.json({ success: true, data });
   } catch (error) {
     console.error('Error fetching project:', error);
@@ -33,12 +39,10 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  // Validate project ID
-  const idValidation = ProjectIdSchema.safeParse(params.id);
+export async function PUT(request: NextRequest) {
+  const id = extractIdFromRequest(request);
+
+  const idValidation = ProjectIdSchema.safeParse(id);
   if (!idValidation.success) {
     return NextResponse.json(
       { success: false, error: 'ID dự án không hợp lệ' },
@@ -49,7 +53,6 @@ export async function PUT(
   try {
     const body = await request.json();
 
-    // Validate request body
     const validation = UpdateProjectSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json(
@@ -80,12 +83,10 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  // Validate project ID
-  const idValidation = ProjectIdSchema.safeParse(params.id);
+export async function DELETE(request: NextRequest) {
+  const id = extractIdFromRequest(request);
+
+  const idValidation = ProjectIdSchema.safeParse(id);
   if (!idValidation.success) {
     return NextResponse.json(
       { success: false, error: 'ID dự án không hợp lệ' },
