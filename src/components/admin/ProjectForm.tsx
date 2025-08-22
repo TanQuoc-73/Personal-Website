@@ -44,7 +44,7 @@ export function ProjectForm({ onClose, initialData, onSuccess }: ProjectFormProp
   // Load initial data when in edit mode
   useEffect(() => {
     if (initialData) {
-      const { like_count, ...initialDataWithoutLikeCount } = initialData;
+      // Không destructure like_count nữa
       setFormData({
         title: initialData.title,
         slug: initialData.slug,
@@ -53,7 +53,6 @@ export function ProjectForm({ onClose, initialData, onSuccess }: ProjectFormProp
         status: initialData.status || 'in-progress',
         is_featured: initialData.is_featured || false,
         sort_order: initialData.sort_order || 0,
-        // Removed like_count as it's managed by the server
         github_url: initialData.github_url || '',
         demo_url: initialData.demo_url || '',
         featured_image_url: initialData.featured_image_url || '',
@@ -66,6 +65,7 @@ export function ProjectForm({ onClose, initialData, onSuccess }: ProjectFormProp
       });
     }
   }, [initialData]);
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,39 +79,39 @@ export function ProjectForm({ onClose, initialData, onSuccess }: ProjectFormProp
       
       const method = isEditMode ? 'PUT' : 'POST';
       
-      // Log dữ liệu trước khi gửi để debug
-      console.log('Submitting form data:', formData);
+      // Exclude like_count if somehow it exists
+      const { like_count, ...cleanFormData } = formData as any;
       
       // Only include fields that are defined in CreateProjectSchema
       const formDataForSubmission: Record<string, any> = {};
       
       // Required fields
-      formDataForSubmission.title = formData.title;
-      formDataForSubmission.slug = formData.slug;
-      formDataForSubmission.status = formData.status;
+      formDataForSubmission.title = cleanFormData.title;
+      formDataForSubmission.slug = cleanFormData.slug;
+      formDataForSubmission.status = cleanFormData.status;
       
       // Optional fields with proper type conversion
-      if (formData.description) formDataForSubmission.description = formData.description;
-      if (formData.short_description) formDataForSubmission.short_description = formData.short_description;
-      if (formData.content) formDataForSubmission.content = formData.content;
-      if (formData.github_url) formDataForSubmission.github_url = formData.github_url;
-      if (formData.demo_url) formDataForSubmission.demo_url = formData.demo_url;
-      if (formData.featured_image_url) formDataForSubmission.featured_image_url = formData.featured_image_url;
-      if (formData.category_id) formDataForSubmission.category_id = formData.category_id;
-      if (formData.client) formDataForSubmission.client = formData.client;
-      if (formData.budget_range) formDataForSubmission.budget_range = formData.budget_range;
+      if (cleanFormData.description) formDataForSubmission.description = cleanFormData.description;
+      if (cleanFormData.short_description) formDataForSubmission.short_description = cleanFormData.short_description;
+      if (cleanFormData.content) formDataForSubmission.content = cleanFormData.content;
+      if (cleanFormData.github_url) formDataForSubmission.github_url = cleanFormData.github_url;
+      if (cleanFormData.demo_url) formDataForSubmission.demo_url = cleanFormData.demo_url;
+      if (cleanFormData.featured_image_url) formDataForSubmission.featured_image_url = cleanFormData.featured_image_url;
+      if (cleanFormData.category_id) formDataForSubmission.category_id = cleanFormData.category_id;
+      if (cleanFormData.client) formDataForSubmission.client = cleanFormData.client;
+      if (cleanFormData.budget_range) formDataForSubmission.budget_range = cleanFormData.budget_range;
       
       // Convert dates to ISO string if they exist
-      if (formData.start_date) {
-        formDataForSubmission.start_date = new Date(formData.start_date).toISOString();
+      if (cleanFormData.start_date) {
+        formDataForSubmission.start_date = new Date(cleanFormData.start_date).toISOString();
       }
-      if (formData.end_date) {
-        formDataForSubmission.end_date = new Date(formData.end_date).toISOString();
+      if (cleanFormData.end_date) {
+        formDataForSubmission.end_date = new Date(cleanFormData.end_date).toISOString();
       }
       
       // Boolean and number fields with defaults
-      formDataForSubmission.is_featured = Boolean(formData.is_featured);
-      formDataForSubmission.sort_order = Number(formData.sort_order) || 0;
+      formDataForSubmission.is_featured = Boolean(cleanFormData.is_featured);
+      formDataForSubmission.sort_order = Number(cleanFormData.sort_order) || 0;
       
       console.log('Sending data to server:', JSON.stringify(formDataForSubmission, null, 2));
       

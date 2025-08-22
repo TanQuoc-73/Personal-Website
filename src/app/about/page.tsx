@@ -6,17 +6,17 @@ const skills = [
   {
     name: 'Frontend Development',
     icon: <FaCode className="text-4xl text-red-400 mb-4" />,
-    description: 'Xây dựng giao diện người dùng đáp ứng và trực quan với các framework hiện đại như React & Next.js.',
+    description: 'Building responsive and intuitive user interfaces with modern frameworks like React & Next.js.',
   },
   {
     name: 'Backend Development',
     icon: <FaServer className="text-4xl text-red-400 mb-4" />,
-    description: 'Tạo các ứng dụng và API phía máy chủ mạnh mẽ và có khả năng mở rộng.',
+    description: 'Creating powerful and scalable server-side applications and APIs.',
   },
   {
     name: 'UI/UX Design',
     icon: <FaPaintBrush className="text-4xl text-red-400 mb-4" />,
-    description: 'Thiết kế giao diện lấy người dùng làm trung tâm và hấp dẫn về mặt hình ảnh.',
+    description: 'Designing user-centered and visually appealing interfaces.',
   },
 ];
 
@@ -31,33 +31,33 @@ export default function AboutPage() {
             <Image
               className="w-40 h-40 rounded-full mx-auto mb-6 object-cover border-4 border-red-500 shadow-lg"
               src="/images/avatar.jpg"
-              alt="Dương Quốc Tần"
+              alt="Duong Quoc Tan"
               width={160}
               height={160}
             />
-            <h1 className="text-5xl font-extrabold text-red-400">Chào bạn, tôi là Dương Quốc Tần</h1>
+            <h1 className="text-5xl font-extrabold text-red-400">Hello, I'm Duong Quoc Tan</h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">
-              Một nhà phát triển phần mềm đam mê xây dựng các ứng dụng web đẹp và hữu ích.
+              A passionate software developer who loves building beautiful and useful web applications.
             </p>
           </div>
         </section>
 
         {/* My Story */}
         <section className="bg-black/40 backdrop-blur-md p-10 rounded-xl border border-red-500/30 shadow-lg">
-          <h2 className="text-3xl font-bold text-red-400 mb-6 text-center">Hành trình của tôi</h2>
+          <h2 className="text-3xl font-bold text-red-400 mb-6 text-center">My Journey</h2>
           <p className="text-lg text-gray-300 leading-relaxed mb-4">
-            Hãy điền vào đây câu chuyện của bạn. Bắt đầu từ đâu? Điều gì đã thôi thúc bạn theo đuổi lập trình?
-            Chia sẻ một vài cột mốc quan trọng trong sự nghiệp hoặc các dự án mà bạn tâm đắc.
+            This is where you can share your story. Where did you start? What inspired you to pursue programming?
+            Share some important milestones in your career or projects you're proud of.
           </p>
           <p className="text-lg text-gray-300 leading-relaxed">
-            Mục tiêu của tôi là không ngừng học hỏi và áp dụng công nghệ mới để tạo ra những sản phẩm có giá trị,
-            giải quyết các vấn đề thực tế.
+            My goal is to continuously learn and apply new technologies to create valuable products
+            that solve real-world problems.
           </p>
         </section>
 
         {/* Skills */}
         <section>
-          <h2 className="text-3xl font-bold text-center text-red-400 mb-12">Kỹ năng của tôi</h2>
+          <h2 className="text-3xl font-bold text-center text-red-400 mb-12">My Skills</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {skills.map((skill) => (
               <div
@@ -74,9 +74,9 @@ export default function AboutPage() {
 
         {/* Call to Action */}
         <section className="bg-black/50 backdrop-blur-md p-12 rounded-xl border border-red-500/30 text-center shadow-lg">
-          <h2 className="text-3xl font-bold mb-4 text-red-400">Cùng kết nối nhé!</h2>
+          <h2 className="text-3xl font-bold mb-4 text-red-400">Let's Connect!</h2>
           <p className="max-w-2xl mx-auto text-lg text-gray-300 mb-8">
-            Tôi luôn sẵn lòng thảo luận về các cơ hội hợp tác, dự án mới hoặc đơn giản là chia sẻ kiến thức. Đừng ngần ngại liên hệ!
+            I'm always open to discussing collaboration opportunities, new projects, or simply sharing knowledge. Don't hesitate to reach out!
           </p>
           <div className="flex justify-center items-center space-x-6 mb-8">
             <Link href="#" className="hover:text-red-400 transition-colors"><FaGithub size={30} /></Link>
@@ -87,7 +87,7 @@ export default function AboutPage() {
             href="/contact"
             className="bg-red-500 text-white font-bold py-3 px-8 rounded-full hover:bg-red-600 transition-colors duration-300"
           >
-            Liên hệ với tôi
+            Contact Me
           </Link>
         </section>
       </main>

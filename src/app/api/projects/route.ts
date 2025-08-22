@@ -48,13 +48,16 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    
+
+    // Lọc bỏ trường like_count nếu có
+    const { like_count, ...cleanBody } = body;
+
     // Log the incoming request body for debugging
-    console.log('Incoming request body:', JSON.stringify(body, null, 2));
-    
-    // First validate the request body
-    const validation = CreateProjectSchema.safeParse(body);
-    
+    console.log('Incoming request body (cleaned):', JSON.stringify(cleanBody, null, 2));
+
+    // First validate the cleaned request body
+    const validation = CreateProjectSchema.safeParse(cleanBody);
+
     // If there are validation errors, return them
     if (!validation.success) {
       // Extract field names that caused validation to fail
