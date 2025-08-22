@@ -10,13 +10,19 @@ import { Category } from "@/types/categories";
 export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Kiểu dữ liệu cho danh sách categories
+  interface CategoriesResponse {
+    success: boolean;
+    data: Category[];
+  }
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch('/api/categories');
-        const data = await response.json();
-        if (data.success) {
+        const data: CategoriesResponse = await response.json();
+        if (data.success && Array.isArray(data.data)) {
           setCategories(data.data);
         }
       } catch (error) {
@@ -159,7 +165,7 @@ export default function Home() {
             </div>
             
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <a
+              <Link
                 href="mailto:your.email@example.com"
                 className="group relative inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold shadow-xl hover:shadow-2xl hover:shadow-red-500/25 transform hover:scale-105 transition-all duration-300 ease-out overflow-hidden"
               >
@@ -171,9 +177,9 @@ export default function Home() {
                   Send Email
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </a>
+              </Link>
               
-              <a
+              <Link
                 href="#portfolio"
                 className="group relative inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-white/80 backdrop-blur-sm text-gray-800 font-semibold shadow-lg border-2 border-gray-200/50 hover:border-red-500/30 hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out"
               >
@@ -184,7 +190,7 @@ export default function Home() {
                   View Portfolio
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-red-50 to-red-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

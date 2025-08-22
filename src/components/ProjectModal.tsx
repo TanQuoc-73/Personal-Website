@@ -1,12 +1,17 @@
 'use client';
 
+import Image from 'next/image';
 import { Modal } from '@/components/ui/modal';
-import { Project } from '@/types/project';
+import { Project, ProjectImage } from '@/types/project';
 import { FaCheckCircle, FaArchive, FaGithub, FaExternalLinkAlt, FaTimes } from 'react-icons/fa';
 import { MdOutlinePending } from 'react-icons/md';
 
+interface ProjectWithImages extends Project {
+  images?: ProjectImage[];
+}
+
 interface ProjectModalProps {
-  project: Project | null;
+  project: ProjectWithImages | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -37,13 +42,34 @@ export function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
 
         <div className="p-6 space-y-6">
           {/* Featured Image */}
+          {/* Featured Image */}
           {project.featured_image_url && (
             <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden">
-              <img
+              <Image
                 src={project.featured_image_url}
                 alt={project.title}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1024px"
+                priority
               />
+            </div>
+          )}
+          
+          {/* Additional Images */}
+          {project.images && project.images.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+              {project.images.map((image, index: number) => (
+                <div key={image.id || index} className="relative w-full h-48 rounded-lg overflow-hidden">
+                  <Image
+                    src={image.image_url}
+                    alt={image.alt_text || `${project.title} - Image ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
+              ))}
             </div>
           )}
           

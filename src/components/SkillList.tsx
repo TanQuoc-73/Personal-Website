@@ -1,6 +1,7 @@
 // src/components/SkillList.tsx
 'use client';
 
+import Image from 'next/image';
 import { useSkills } from '@/hooks/useSkills';
 import { useState, useEffect } from 'react';
 
@@ -69,16 +70,20 @@ export default function SkillList({ adminView = false }: SkillListProps) {
             
             <div className="relative z-10 flex flex-col items-center text-center">
               {/* Icon container */}
-              <div className="relative mb-4 p-3 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 group-hover:from-red-800 group-hover:to-red-900 transition-all duration-500">
+              <div className="relative mb-4 p-3 w-20 h-20 flex items-center justify-center rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 group-hover:from-red-800 group-hover:to-red-900 transition-all duration-500">
                 {/* Icon background glow */}
                 <div className="absolute inset-0 rounded-2xl bg-red-600/30 opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500"></div>
                 
                 {skill.icon_url && (
-                  <img
-                    src={skill.icon_url}
-                    alt={skill.name}
-                    className="relative w-14 h-14 object-contain transition-transform duration-500 group-hover:scale-110"
-                  />
+                  <div className="relative w-14 h-14">
+                    <Image
+                      src={skill.icon_url}
+                      alt={skill.name}
+                      fill
+                      className="object-contain transition-transform duration-500 group-hover:scale-110"
+                      sizes="56px"
+                    />
+                  </div>
                 )}
               </div>
 

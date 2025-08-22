@@ -7,7 +7,9 @@ const nextConfig: NextConfig = {
       'localhost',
       'res.cloudinary.com',
       'images.unsplash.com',
-      'via.placeholder.com'
+      'via.placeholder.com',
+      'template.canva.com',
+      'example.com'
     ],
   },
 };

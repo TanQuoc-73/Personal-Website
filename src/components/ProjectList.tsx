@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useProjects, type ProjectsQuery } from '@/hooks/useProjects';
 import { FaCheckCircle, FaArchive, FaGithub, FaExternalLinkAlt, FaFilter, FaSearch } from 'react-icons/fa';
 import { MdOutlinePending } from 'react-icons/md';
@@ -8,7 +9,16 @@ import { ProjectModal } from '@/components/ProjectModal';
 import { Category } from '@/types/categories';
 import type { Project } from '@/types/project';
 
-type ProjectStatus = 'in-progress' | 'completed' | 'archived';
+type ProjectStatus = 'in-progress' | 'completed' | 'archived' | string;
+
+// Sử dụng lại kiểu Category từ API
+interface ProjectWithCategory extends Omit<Project, 'categories'> {
+  categories?: {
+    id: string;
+    name: string;
+    color?: string;  // Cho phép color là optional
+  };
+}
 
 interface ProjectListProps {
   initialFilters?: ProjectsQuery;
@@ -25,14 +35,15 @@ export default function ProjectList({
   categories: initialCategories = [],
   onCategoryFilter 
 }: ProjectListProps) {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ProjectWithCategory | null>(null);
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [isLoadingCategories, setIsLoadingCategories] = useState(false);
   
   // Manage filters internally
   const [search, setSearch] = useState<string>(initialFilters.search ?? '');
   const [categoryId, setCategoryId] = useState<string | undefined>(initialFilters.categoryId);
-  const [status, setStatus] = useState<ProjectStatus | undefined>(initialFilters.status as ProjectStatus | undefined);
+  // Chuyển đổi status từ string sang kiểu ProjectStatus
+  const [status, setStatus] = useState<ProjectStatus | undefined>(initialFilters.status);
   const [isFeatured, setIsFeatured] = useState<boolean | undefined>(initialFilters.isFeatured);
   // Pagination: default limit 6 for 3 rows x 2 columns
   const [page, setPage] = useState<number>(initialFilters.page ?? 1);
@@ -42,7 +53,7 @@ export default function ProjectList({
     () => ({
       search: search.trim() || undefined,
       categoryId,
-      status,
+      status: status as 'in-progress' | 'completed' | 'archived' | undefined,
       isFeatured,
       page,
       limit,
@@ -74,14 +85,33 @@ export default function ProjectList({
     }
   }, [showCategoryFilter, categories.length]);
 
-  const { projects, isLoading, error, count } = useProjects(filters);
+  const { 
+    projects, 
+    isLoading, 
+    error, 
+    count,
+    updateProject
+  } = useProjects(filters);
+  
+  // Chuyển đổi dữ liệu projects sang đúng kiểu ProjectWithCategory
+  const projectsWithCategories = useMemo<ProjectWithCategory[]>(() => {
+    if (!projects) return [];
+    return projects.map(project => ({
+      ...project,
+      categories: project.categories ? {
+        id: project.categories.id,
+        name: project.categories.name,
+        color: project.categories.color
+      } : undefined
+    }));
+  }, [projects]);
 
   // Reset page on filter changes
   useEffect(() => {
     setPage(1);
   }, [search, categoryId, status, isFeatured, limit]);
 
-  const handleProjectClick = (project: Project) => {
+  const handleProjectClick = (project: ProjectWithCategory) => {
     setSelectedProject(project);
   };
 
@@ -89,7 +119,22 @@ export default function ProjectList({
     setSelectedProject(null);
   };
 
-  const handleDeleteProject = async (project: Project, e: React.MouseEvent) => {
+  const handleToggleFeatured = async (project: ProjectWithCategory, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering project click
+    
+    if (!confirm('Toggle featured status for this project?')) return;
+    
+    try {
+      const res = await fetch(`/api/projects/${project.id}`, { method: 'PATCH', body: JSON.stringify({ is_featured: !project.is_featured }) });
+      if (!res.ok) throw new Error('Toggle failed');
+      // simple refresh
+      window.location.reload();
+    } catch (e) {
+      alert((e as any).message ?? 'Toggle failed');
+    }
+  };
+
+  const handleDeleteProject = async (project: ProjectWithCategory, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent triggering project click
     
     if (!confirm('Delete this project?')) return;
@@ -234,7 +279,7 @@ export default function ProjectList({
             <p className="text-red-400 text-lg">{error}</p>
           </div>
         </div>
-      ) : projects.length === 0 ? (
+      ) : projectsWithCategories.length === 0 ? (
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
             <div className="text-white/50 text-6xl mb-4">📂</div>
@@ -248,7 +293,7 @@ export default function ProjectList({
           {typeof count === 'number' && (
             <div className="flex items-center justify-between">
               <div className="text-white/70 text-sm">
-                Showing <span className="text-white font-semibold">{projects.length}</span> of{' '}
+                Showing <span className="text-white font-semibold">{projectsWithCategories.length}</span> of{' '}
                 <span className="text-white font-semibold">{count}</span> project{count !== 1 ? 's' : ''}
               </div>
             </div>
@@ -256,7 +301,7 @@ export default function ProjectList({
           
           {/* Projects Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            {projects.map((project) => (
+            {projectsWithCategories.map((project) => (
               <div 
                 key={project.id} 
                 className="group relative flex flex-col rounded-2xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-lg transition-all duration-300 hover:shadow-2xl hover:border-white/30 overflow-hidden cursor-pointer hover:scale-[1.02] hover:bg-black/40"
@@ -273,10 +318,13 @@ export default function ProjectList({
 
                 {project.featured_image_url && (
                   <div className="relative w-full h-48 overflow-hidden">
-                    <img
+                    <Image
                       src={project.featured_image_url}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      priority={false}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                   </div>
@@ -301,17 +349,17 @@ export default function ProjectList({
                   </div>
                   
                   {/* Category badge */}
-                  {(project as any).categories && (
+                  {project.categories && (
                     <div className="mb-3">
                       <span 
                         className="inline-block px-3 py-1.5 text-xs font-semibold rounded-full border backdrop-blur-sm"
                         style={{
-                          backgroundColor: `${(project as any).categories.color || '#ef4444'}15`,
-                          color: (project as any).categories.color || '#fca5a5',
-                          borderColor: `${(project as any).categories.color || '#ef4444'}40`
+                          backgroundColor: `${project.categories.color || '#ef4444'}15`,
+                          color: project.categories.color || '#fca5a5',
+                          borderColor: `${project.categories.color || '#ef4444'}40`
                         }}
                       >
-                        {(project as any).categories.name}
+                        {project.categories.name}
                       </span>
                     </div>
                   )}
@@ -350,7 +398,7 @@ export default function ProjectList({
                     </div>
 
                     <div className="text-xs text-white/60 capitalize font-medium">
-                      {project.status.replace('-', ' ')}
+                      {project.status?.replace('-', ' ') || 'N/A'}
                     </div>
                   </div>
 
