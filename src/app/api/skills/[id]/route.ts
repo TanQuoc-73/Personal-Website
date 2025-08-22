@@ -9,8 +9,11 @@ function extractIdFromRequest(request: NextRequest): string | undefined {
 
 function getErrorMessage(error: unknown): string {
   if (typeof error === 'string') return error;
-  if (error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string') {
-    return (error as any).message;
+  if (error && typeof error === 'object' && 'message' in error) {
+    const e = error as { message?: unknown };
+    if (typeof e.message === 'string') {
+      return e.message;
+    }
   }
   return 'Đã xảy ra lỗi';
 }
