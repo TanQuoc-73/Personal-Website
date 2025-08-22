@@ -4,15 +4,12 @@ import { useProjects, type ProjectsQuery } from '@/hooks/useProjects';
 import { FaCheckCircle, FaArchive, FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 import { MdOutlinePending } from 'react-icons/md';
 import { useEffect, useMemo, useState } from 'react';
-import { ProjectModal } from '@/components/ui/ProjectModal';
+import { ProjectModal } from '@/components/ProjectModal';
+import {Category} from '@/types/categories';
 import type { Project } from '@/types/project';
 
-type ProjectStatus = 'in-progress' | 'completed' | 'archived';
 
-interface Category {
-  id: string;
-  name: string;
-}
+type ProjectStatus = 'in-progress' | 'completed' | 'archived';
 
 interface ProjectListProps {
   initialFilters?: ProjectsQuery;
