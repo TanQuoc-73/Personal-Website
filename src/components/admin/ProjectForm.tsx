@@ -80,10 +80,10 @@ export function ProjectForm({ onClose, initialData, onSuccess }: ProjectFormProp
       const method = isEditMode ? 'PUT' : 'POST';
       
       // Exclude like_count if somehow it exists
-      const { like_count, ...cleanFormData } = formData as any;
+      const { like_count, ...cleanFormData } = formData as Partial<Project> & { like_count?: number };
       
       // Only include fields that are defined in CreateProjectSchema
-      const formDataForSubmission: Record<string, any> = {};
+      const formDataForSubmission: Partial<Omit<Project, 'id' | 'created_at' | 'updated_at' | 'like_count'>> = {};
       
       // Required fields
       formDataForSubmission.title = cleanFormData.title;

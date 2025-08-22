@@ -10,7 +10,7 @@ export interface UserProfile {
   // Thêm các trường khác nếu cần
 }
 
-export async function getUserProfile(userId: string): Promise<{ data: UserProfile | null; error: any | null }> {
+export async function getUserProfile(userId: string): Promise<{ data: UserProfile | null; error: Error | null }> {
   const { data, error } = await supabase
     .from('users')
     .select('id, email, full_name, role, avatar_url')
@@ -45,14 +45,16 @@ export async function ensureUserProfile(
   full_name?: string | null,
   avatar_url?: string | null,
   defaultRole: string | null = 'user'
-): Promise<{ data: UserProfile | null; error: any | null }> {
+): Promise<{ data: UserProfile | null; error: Error | null }> {
   // Check existing
-  const existing = await getUserProfile(userId);
-  try {
-    // Check existing
-    if (existing.error) return { data: null, error: existing.error };
-    if (existing.data) return { data: existing.data, error: null };
+  const { data: existingProfile, error: fetchError } = await getUserProfile(userId);
+  if (fetchError) return { data: null, error: fetchError };
 
+  if (existingProfile) {
+    return { data: existingProfile, error: null };
+  }
+
+  try {
     // Insert minimal record. Use .select().single() to return the created row
     const { data: created, error } = await supabase
       .from('users')
@@ -67,14 +69,20 @@ export async function ensureUserProfile(
       .single();
 
     if (error) {
-      // Map supabase error to plain object for better logging
-      const err = {
-        message: (error as any).message ?? null,
-        details: (error as any).details ?? null,
-        hint: (error as any).hint ?? null,
-        code: (error as any).code ?? null,
-        status: (error as any).status ?? null,
-      };
+      // Map supabase error to Error object
+      const errorMessage = (error as Error).message || 'Unknown error';
+      const err = new Error(errorMessage);
+      
+      // Add additional properties to the error object
+      if (error && typeof error === 'object') {
+        Object.assign(err, {
+          details: 'details' in error ? error.details : null,
+          hint: 'hint' in error ? error.hint : null,
+          code: 'code' in error ? error.code : null,
+          status: 'status' in error ? error.status : null,
+        });
+      }
+      
       return { data: null, error: err };
     }
 
@@ -87,7 +95,9 @@ export async function ensureUserProfile(
     };
 
     return { data: profile, error: null };
-  } catch (e: any) {
-    return { data: null, error: { message: e?.message ?? String(e) } };
+  } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    const error = new Error(errorMessage);
+    return { data: null, error };
   }
 }

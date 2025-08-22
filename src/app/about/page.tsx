@@ -47,7 +47,7 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold text-red-400 mb-6 text-center">My Journey</h2>
           <p className="text-lg text-gray-300 leading-relaxed mb-4">
             This is where you can share your story. Where did you start? What inspired you to pursue programming?
-            Share some important milestones in your career or projects you're proud of.
+            Share some important milestones in your career or projects you&apos;re proud of.
           </p>
           <p className="text-lg text-gray-300 leading-relaxed">
             My goal is to continuously learn and apply new technologies to create valuable products

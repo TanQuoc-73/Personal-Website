@@ -2,7 +2,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import type { Skill } from '@/types/skill';
 
-export async function getAllSkills(): Promise<{ data: Skill[] | null; error: any }> {
+export async function getAllSkills(): Promise<{ data: Skill[] | null; error: Error | unknown }> {
   const { data, error } = await supabase
     .from('skills')
     .select('*')

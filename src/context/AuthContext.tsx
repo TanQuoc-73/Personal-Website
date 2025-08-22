@@ -61,20 +61,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // If not found, create a minimal profile from auth user data
+      const userMetadata = user.user_metadata as {
+        full_name?: string;
+        name?: string;
+        avatar_url?: string;
+        picture?: string;
+      } | null;
+      
       const { data: created, error: createError } = await ensureUserProfile(
         user.id,
         user.email ?? null,
-        user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
+        userMetadata?.full_name ?? userMetadata?.name ?? null,
         // Supabase stores avatar at user.user_metadata?.avatar_url or .picture depending on provider
-        (user.user_metadata as any)?.avatar_url ?? (user.user_metadata as any)?.picture ?? null,
+        userMetadata?.avatar_url ?? userMetadata?.picture ?? null,
         'user'
       );
 
       if (createError) {
         // Log structured info if available
-        if (typeof createError === 'object' && createError !== null) {
-          const e: any = createError;
-          console.error('ensureUserProfile error:', e.message ?? null, e.details ?? null, e.hint ?? null, e.code ?? null, e.status ?? null);
+        if (createError instanceof Error) {
+          const error = createError as Error & {
+            details?: string;
+            hint?: string;
+            code?: string;
+            status?: number;
+          };
+          console.error('ensureUserProfile error:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+            status: error.status
+          });
         } else {
           console.error('ensureUserProfile error:', createError);
         }

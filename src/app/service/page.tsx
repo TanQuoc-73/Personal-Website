@@ -66,7 +66,7 @@ export default function ServicePage() {
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
         {services.map((service, index) => {
           // Bảo vệ: nếu icon undefined thì dùng FALLBACK_ICON
-          const Icon = (service.icon as any) || FALLBACK_ICON;
+          const Icon = (service.icon as React.ComponentType<{ className?: string }>) || FALLBACK_ICON;
 
           return (
             <motion.div

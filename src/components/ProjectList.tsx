@@ -130,7 +130,8 @@ export default function ProjectList({
       // simple refresh
       window.location.reload();
     } catch (e) {
-      alert((e as any).message ?? 'Toggle failed');
+      const error = e instanceof Error ? e : new Error('Toggle failed');
+      alert(error.message);
     }
   };
 
@@ -145,7 +146,8 @@ export default function ProjectList({
       // simple refresh
       window.location.reload();
     } catch (e) {
-      alert((e as any).message ?? 'Delete failed');
+      const error = e instanceof Error ? e : new Error('Delete failed');
+      alert(error.message);
     }
   };
 

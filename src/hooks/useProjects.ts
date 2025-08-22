@@ -9,7 +9,7 @@ type ApiResponse<T> = {
   success: boolean;
   data?: T;
   error?: string;
-  details?: any;
+  details?: Record<string, unknown>;
   count?: number;
   page?: number;
   limit?: number;
@@ -29,7 +29,7 @@ export function useProjects(filters: ProjectsQuery = {}) {
   });
 
   // Hàm tạo URL với query params
-  const buildUrl = useCallback((baseUrl: string, params: Record<string, any> = {}) => {
+  const buildUrl = useCallback((baseUrl: string, params: Record<string, string | number | boolean | undefined | null> = {}) => {
     const url = new URL(baseUrl, window.location.origin);
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
@@ -40,9 +40,13 @@ export function useProjects(filters: ProjectsQuery = {}) {
   }, []);
 
   // Hàm xử lý lỗi API
-  const handleApiError = (error: any, defaultMessage: string) => {
+  const handleApiError = (error: unknown, defaultMessage: string) => {
     console.error('API Error:', error);
-    const errorMessage = error?.message || error?.error || defaultMessage;
+    const errorMessage = (error && typeof error === 'object' && ('message' in error) && typeof error.message === 'string') 
+      ? error.message 
+      : (error && typeof error === 'object' && ('error' in error) && typeof error.error === 'string')
+        ? error.error
+        : defaultMessage;
     setError(errorMessage);
     return { success: false, error: errorMessage };
   };

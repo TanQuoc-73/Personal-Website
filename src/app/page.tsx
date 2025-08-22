@@ -199,7 +199,6 @@ export default function Home() {
       {/* Featured Projects Section */}
       <section className="w-full max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8" id="projects">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Dự án nổi bật</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             
           </p>
@@ -207,7 +206,7 @@ export default function Home() {
         
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
           </div>
         ) : (
           <ProjectList 
@@ -220,7 +219,7 @@ export default function Home() {
         <div className="text-center mt-12">
           <Link 
             href="/project" 
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300"
+            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:red-offset-2 focus:ring-red-500 transition-colors duration-300"
           >
             View All Projects
           </Link>
