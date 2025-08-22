@@ -4,17 +4,23 @@ import { useProjects, type ProjectsQuery } from '@/hooks/useProjects';
 import { FaCheckCircle, FaArchive, FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 import { MdOutlinePending } from 'react-icons/md';
 import { useEffect, useMemo, useState } from 'react';
+import { ProjectModal } from '@/components/ui/ProjectModal';
+import type { Project } from '@/types/project';
+
+type ProjectStatus = 'in-progress' | 'completed' | 'archived';
 
 type Props = {
   initialFilters?: ProjectsQuery;
   categories?: { id: string; name: string }[];
+  showAdminActions?: boolean;
 };
 
-export default function ProjectList({ initialFilters = {}, categories = [], showAdminActions = false }: Props & { showAdminActions?: boolean }) {
+export default function ProjectList({ initialFilters = {}, categories = [], showAdminActions = false }: Props) {
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   // Manage filters internally
   const [search, setSearch] = useState<string>(initialFilters.search ?? '');
   const [categoryId, setCategoryId] = useState<string | undefined>(initialFilters.categoryId);
-  const [status, setStatus] = useState<string | undefined>(initialFilters.status);
+  const [status, setStatus] = useState<ProjectStatus | undefined>(initialFilters.status as ProjectStatus | undefined);
   const [isFeatured, setIsFeatured] = useState<boolean | undefined>(initialFilters.isFeatured);
   // Pagination: default limit 6 for 3 rows x 2 columns
   const [page, setPage] = useState<number>(initialFilters.page ?? 1);
@@ -41,8 +47,37 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
     setPage(1);
   }, [search, categoryId, status, isFeatured, limit]);
 
+  const handleProjectClick = (project: Project) => {
+    setSelectedProject(project);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProject(null);
+  };
+
+  const handleDeleteProject = async (project: Project, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering project click
+    
+    if (!confirm('Delete this project?')) return;
+    
+    try {
+      const res = await fetch(`/api/projects/${project.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      // simple refresh
+      window.location.reload();
+    } catch (e) {
+      alert((e as any).message ?? 'Delete failed');
+    }
+  };
+
   return (
     <div className="space-y-6">
+      <ProjectModal 
+        project={selectedProject} 
+        isOpen={!!selectedProject} 
+        onClose={handleCloseModal} 
+      />
+      
       {/* Filter inputs */}
       <div className="flex flex-wrap gap-4 items-center">
         <input
@@ -69,7 +104,7 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
         <select
           className="px-3 py-2 rounded border border-white/30 bg-black/20 text-white"
           value={status || ''}
-          onChange={(e) => setStatus(e.target.value || undefined)}
+          onChange={(e) => setStatus((e.target.value as ProjectStatus) || undefined)}
         >
           <option value="">All Statuses</option>
           <option value="completed">Completed</option>
@@ -85,6 +120,18 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
           />
           <span>Featured</span>
         </label>
+
+        <select
+          className="px-3 py-2 rounded border border-white/30 bg-black/20 text-white"
+          value={limit}
+          onChange={(e) => setLimit(parseInt(e.target.value))}
+        >
+          {[6, 10, 12, 16, 20].map((n) => (
+            <option key={n} value={n}>
+              {n}/page
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Projects list */}
@@ -96,14 +143,16 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
         <p className="text-white/80">No projects found.</p>
       ) : (
         <>
+          {typeof count === 'number' && (
+            <div className="text-white/80 text-sm mb-2">{count} project(s)</div>
+          )}
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {typeof count === 'number' && (
-              <div className="col-span-full text-white/80 text-sm mb-2">{count} project(s)</div>
-            )}
             {projects.map((project) => (
-              <div
-                key={project.id}
-                className="group relative flex flex-col rounded-2xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-lg transition-all duration-300 hover:shadow-2xl hover:border-white/30 overflow-hidden"
+              <div 
+                key={project.id} 
+                className="group relative flex flex-col rounded-2xl border border-white/20 bg-black/30 backdrop-blur-lg shadow-lg transition-all duration-300 hover:shadow-2xl hover:border-white/30 overflow-hidden cursor-pointer hover:opacity-90"
+                onClick={() => handleProjectClick(project)}
               >
                 {project.featured_image_url && (
                   <img
@@ -124,6 +173,7 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-white hover:text-white transition-colors"
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <FaExternalLinkAlt />
                         <span>Demo</span>
@@ -135,6 +185,7 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-white hover:text-white transition-colors"
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <FaGithub />
                         <span>GitHub</span>
@@ -171,22 +222,13 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
                       <a
                         href={`/admin/projects/${project.id}`}
                         className="px-3 py-1 rounded border border-white/20 text-white/90 bg-white/5 hover:bg-white/10"
+                        onClick={(e) => e.stopPropagation()}
                       >
                         Edit
                       </a>
                       <button
                         className="px-3 py-1 rounded border border-red-500 text-red-400 bg-red-800/10 hover:bg-red-800/20"
-                        onClick={async () => {
-                          if (!confirm('Delete this project?')) return;
-                          try {
-                            const res = await fetch(`/api/projects/${project.id}`, { method: 'DELETE' });
-                            if (!res.ok) throw new Error('Delete failed');
-                            // simple refresh
-                            window.location.reload();
-                          } catch (e) {
-                            alert((e as any).message ?? 'Delete failed');
-                          }
-                        }}
+                        onClick={(e) => handleDeleteProject(project, e)}
                       >
                         Delete
                       </button>
@@ -221,20 +263,6 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
                 >
                   Next
                 </button>
-                <select
-                  className="ml-2 bg-transparent border border-white/20 text-white/90 rounded px-2 py-1"
-                  value={limit}
-                  onChange={(e) => {
-                    setLimit(Number(e.target.value));
-                    setPage(1);
-                  }}
-                >
-                  {[6, 10, 12, 16, 20].map((n) => (
-                    <option key={n} value={n} className="bg-black">
-                      {n}/page
-                    </option>
-                  ))}
-                </select>
               </div>
             </div>
           )}
