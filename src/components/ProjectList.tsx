@@ -9,13 +9,24 @@ import type { Project } from '@/types/project';
 
 type ProjectStatus = 'in-progress' | 'completed' | 'archived';
 
-type Props = {
-  initialFilters?: ProjectsQuery;
-  categories?: { id: string; name: string }[];
-  showAdminActions?: boolean;
-};
+interface Category {
+  id: string;
+  name: string;
+}
 
-export default function ProjectList({ initialFilters = {}, categories = [], showAdminActions = false }: Props) {
+interface ProjectListProps {
+  initialFilters?: ProjectsQuery;
+  showAdminActions?: boolean;
+  categories?: Category[];
+  onCategoryFilter?: (categoryId: string) => void;
+}
+
+export default function ProjectList({ 
+  initialFilters = {}, 
+  showAdminActions = false, 
+  categories = [],
+  onCategoryFilter 
+}: ProjectListProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   // Manage filters internally
   const [search, setSearch] = useState<string>(initialFilters.search ?? '');
@@ -70,6 +81,13 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
     }
   };
 
+  const handleCategoryChange = (newCategoryId: string) => {
+    setCategoryId(newCategoryId || undefined);
+    if (onCategoryFilter) {
+      onCategoryFilter(newCategoryId);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <ProjectModal 
@@ -85,16 +103,16 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
           placeholder="Search projects..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="px-3 py-2 rounded border border-white/30 bg-black/20 text-white flex-grow min-w-[200px]"
+          className="px-3 py-2 rounded border border-white/30 bg-black/20 text-white flex-grow min-w-[200px] placeholder:text-white/50"
         />
 
         <select
           className="px-3 py-2 rounded border border-white/30 bg-black/20 text-white"
           value={categoryId || ''}
-          onChange={(e) => setCategoryId(e.target.value || undefined)}
+          onChange={(e) => handleCategoryChange(e.target.value)}
         >
           <option value="">All Categories</option>
-          {categories.map((cat) => (
+          {categories.map((cat: Category) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
             </option>
@@ -117,6 +135,7 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
             type="checkbox"
             checked={!!isFeatured}
             onChange={(e) => setIsFeatured(e.target.checked ? true : undefined)}
+            className="rounded border-white/30 bg-black/20 text-blue-500 focus:ring-blue-500 focus:ring-offset-0"
           />
           <span>Featured</span>
         </label>
@@ -136,15 +155,23 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
 
       {/* Projects list */}
       {isLoading ? (
-        <p>Loading projects...</p>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-white/80">Loading projects...</div>
+        </div>
       ) : error ? (
-        <p className="text-red-500">{error}</p>
+        <div className="flex items-center justify-center py-12">
+          <p className="text-red-400">{error}</p>
+        </div>
       ) : projects.length === 0 ? (
-        <p className="text-white/80">No projects found.</p>
+        <div className="flex items-center justify-center py-12">
+          <p className="text-white/80">No projects found.</p>
+        </div>
       ) : (
         <>
           {typeof count === 'number' && (
-            <div className="text-white/80 text-sm mb-2">{count} project(s)</div>
+            <div className="text-white/80 text-sm mb-2">
+              {count} project{count !== 1 ? 's' : ''} found
+            </div>
           )}
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -155,16 +182,37 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
                 onClick={() => handleProjectClick(project)}
               >
                 {project.featured_image_url && (
-                  <img
-                    src={project.featured_image_url}
-                    alt={project.title}
-                    className="w-full h-48 object-cover"
-                  />
+                  <div className="relative w-full h-48 overflow-hidden">
+                    <img
+                      src={project.featured_image_url}
+                      alt={project.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
                 )}
 
                 <div className="flex flex-col flex-1 p-5">
                   <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
-                  <p className="text-white line-clamp-3 flex-grow">{project.short_description}</p>
+                  
+                  {/* Category badge - check if categories property exists */}
+                  {(project as any).categories && (
+                    <div className="mb-3">
+                      <span 
+                        className="inline-block px-3 py-1 text-xs font-medium rounded-full border"
+                        style={{
+                          backgroundColor: `${(project as any).categories.color || '#3b82f6'}20`,
+                          color: (project as any).categories.color || '#93c5fd',
+                          borderColor: `${(project as any).categories.color || '#3b82f6'}40`
+                        }}
+                      >
+                        {(project as any).categories.name}
+                      </span>
+                    </div>
+                  )}
+                  
+                  <p className="text-white/90 line-clamp-3 flex-grow leading-relaxed">
+                    {project.short_description}
+                  </p>
 
                   <div className="flex items-center gap-4 mt-4 pt-4 border-t border-white/20">
                     {project.demo_url && (
@@ -172,7 +220,7 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
                         href={project.demo_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-white hover:text-white transition-colors"
+                        className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <FaExternalLinkAlt />
@@ -184,7 +232,7 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
                         href={project.github_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-white hover:text-white transition-colors"
+                        className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <FaGithub />
@@ -197,37 +245,37 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
                     {project.status === 'completed' && (
                       <FaCheckCircle
                         title="Completed"
-                        className="text-green-600 text-lg"
+                        className="text-green-400 text-lg"
                       />
                     )}
                     {project.status === 'in-progress' && (
                       <MdOutlinePending
                         title="In Progress"
-                        className="text-yellow-500 text-lg"
+                        className="text-yellow-400 text-lg"
                       />
                     )}
                     {project.status === 'archived' && (
                       <FaArchive
                         title="Archived"
-                        className="text-gray-500 text-lg"
+                        className="text-gray-400 text-lg"
                       />
                     )}
-                    <span className="text-sm font-medium text-white capitalize">
+                    <span className="text-sm font-medium text-white/90 capitalize">
                       {project.status.replace('-', ' ')}
                     </span>
                   </div>
 
                   {showAdminActions && (
-                    <div className="flex items-center gap-2 mt-4">
+                    <div className="flex items-center gap-2 mt-4 pt-3 border-t border-white/10">
                       <a
                         href={`/admin/projects/${project.id}`}
-                        className="px-3 py-1 rounded border border-white/20 text-white/90 bg-white/5 hover:bg-white/10"
+                        className="px-3 py-1.5 rounded-lg border border-white/20 text-white/90 bg-white/5 hover:bg-white/10 transition-colors text-sm"
                         onClick={(e) => e.stopPropagation()}
                       >
                         Edit
                       </a>
                       <button
-                        className="px-3 py-1 rounded border border-red-500 text-red-400 bg-red-800/10 hover:bg-red-800/20"
+                        className="px-3 py-1.5 rounded-lg border border-red-500/50 text-red-400 bg-red-800/10 hover:bg-red-800/20 hover:border-red-500 transition-colors text-sm"
                         onClick={(e) => handleDeleteProject(project, e)}
                       >
                         Delete
@@ -241,20 +289,20 @@ export default function ProjectList({ initialFilters = {}, categories = [], show
 
           {/* Pagination Controls */}
           {typeof count === 'number' && count > 0 && (
-            <div className="flex items-center justify-between mt-6 space-x-2">
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/10">
               <div className="text-white/70 text-sm">
-                Page {page} / {Math.max(1, Math.ceil(count / limit))}
+                Page {page} of {Math.max(1, Math.ceil(count / limit))}
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  className="px-3 py-1 rounded border border-white/20 text-white/90 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg border border-white/20 text-white/90 bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
                 >
-                  Prev
+                  Previous
                 </button>
                 <button
-                  className="px-3 py-1 rounded border border-white/20 text-white/90 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg border border-white/20 text-white/90 bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   onClick={() => {
                     const totalPages = Math.max(1, Math.ceil(count / limit));
                     setPage((p) => Math.min(totalPages, p + 1));

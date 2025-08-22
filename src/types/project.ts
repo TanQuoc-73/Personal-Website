@@ -1,4 +1,10 @@
 // src/types/project.ts
+export interface Category {
+  id: string;
+  name: string;
+  color?: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -10,6 +16,7 @@ export interface Project {
   demo_url?: string;
   github_url?: string;
   category_id?: string;
+  categories?: Category; // Thêm trường categories để lưu thông tin đầy đủ của category
   status: 'in-progress' | 'completed' | 'archived';
   is_featured: boolean;
   sort_order: number;

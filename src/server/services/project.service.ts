@@ -27,7 +27,13 @@ export async function getProjects(filters: ProjectFilters = {}) {
     limit = 10,
   } = filters;
 
-  let query = supabase.from('projects').select('*', { count: 'exact' });
+  // Sử dụng select với join để lấy thông tin category
+  let query = supabase
+    .from('projects')
+    .select(`
+      *,
+      categories:category_id (id, name, color)
+    `, { count: 'exact' });
 
   // filter
   if (categoryId) query = query.eq('category_id', categoryId);
@@ -70,7 +76,10 @@ export async function getAllProjects() {
 export async function getProjectById(id: string) {
   const { data, error } = await supabase
     .from('projects')
-    .select('*')
+    .select(`
+      *,
+      categories:category_id (id, name, color)
+    `)
     .eq('id', id)
     .single();
 
