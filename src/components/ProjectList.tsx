@@ -306,9 +306,9 @@ export default function ProjectList({
                       <span 
                         className="inline-block px-3 py-1.5 text-xs font-semibold rounded-full border backdrop-blur-sm"
                         style={{
-                          backgroundColor: `${(project as any).categories.color || '#3b82f6'}15`,
-                          color: (project as any).categories.color || '#93c5fd',
-                          borderColor: `${(project as any).categories.color || '#3b82f6'}40`
+                          backgroundColor: `${(project as any).categories.color || '#ef4444'}15`,
+                          color: (project as any).categories.color || '#fca5a5',
+                          borderColor: `${(project as any).categories.color || '#ef4444'}40`
                         }}
                       >
                         {(project as any).categories.name}
@@ -403,7 +403,7 @@ export default function ProjectList({
                         onClick={() => setPage(pageNum)}
                         className={`w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200 ${
                           isActive
-                            ? 'bg-blue-600 text-white border border-red-500'
+                            ? 'bg-red-600 text-white border border-red-500'
                             : 'border border-white/20 text-white/70 bg-white/5 hover:bg-white/10 hover:text-white'
                         }`}
                       >

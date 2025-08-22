@@ -1,3 +1,6 @@
+import { FaGithub, FaLinkedin, FaTwitter, FaDev, FaStackOverflow, FaMedium } from 'react-icons/fa';
+import { SiHashnode, SiDevpost } from 'react-icons/si';
+
 export default function Footer() {
   return (
     <footer className="bg-black/60 backdrop-blur-md border-t border-red-600 text-white py-8 mt-12">
@@ -8,30 +11,88 @@ export default function Footer() {
           <div>
             <h2 className="text-2xl font-bold text-red-500">MyPortfolio</h2>
             <p className="text-gray-300 mt-2">
-              Nơi tôi chia sẻ các dự án, kỹ năng và dịch vụ chuyên nghiệp.
+              Where I share my projects, skills, and professional services.
             </p>
           </div>
 
-          {/* Navigation */}
+          {/* Developer Profiles */}
           <div>
-            <h3 className="text-lg font-semibold mb-3 text-red-400">Liên kết nhanh</h3>
-            <ul className="space-y-2">
-              <li><a href="/about" className="hover:text-red-500 transition">About Me</a></li>
-              <li><a href="/portfolio" className="hover:text-red-500 transition">Portfolio</a></li>
-              <li><a href="/services" className="hover:text-red-500 transition">Services</a></li>
-              <li><a href="/contact" className="hover:text-red-500 transition">Contact</a></li>
+            <h3 className="text-lg font-semibold mb-3 text-red-400">Developer Profiles</h3>
+            <ul className="space-y-3">
+              <li>
+                <a 
+                  href="https://github.com/yourusername" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-300 hover:text-red-500 transition-colors"
+                >
+                  <FaGithub className="w-5 h-5" />
+                  <span>GitHub</span>
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://stackoverflow.com/users/youruserid" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-300 hover:text-red-500 transition-colors"
+                >
+                  <FaStackOverflow className="w-5 h-5" />
+                  <span>Stack Overflow</span>
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://dev.to/yourusername" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-300 hover:text-red-500 transition-colors"
+                >
+                  <FaDev className="w-5 h-5" />
+                  <span>DEV Community</span>
+                </a>
+              </li>
             </ul>
           </div>
 
-          {/* Social Media */}
+          {/* Social & Blog */}
           <div>
-            <h3 className="text-lg font-semibold mb-3 text-red-400">Kết nối</h3>
-            <div className="flex gap-4">
-              <a href="#" className="hover:text-red-500 transition">🌐</a>
-              <a href="#" className="hover:text-red-500 transition">🐦</a>
-              <a href="#" className="hover:text-red-500 transition">📸</a>
-              <a href="#" className="hover:text-red-500 transition">💼</a>
-            </div>
+            <h3 className="text-lg font-semibold mb-3 text-red-400">Social & Blog</h3>
+            <ul className="space-y-3">
+              <li>
+                <a 
+                  href="https://linkedin.com/in/yourusername" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-300 hover:text-red-500 transition-colors"
+                >
+                  <FaLinkedin className="w-5 h-5" />
+                  <span>LinkedIn</span>
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://twitter.com/yourusername" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-300 hover:text-red-500 transition-colors"
+                >
+                  <FaTwitter className="w-5 h-5" />
+                  <span>Twitter</span>
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://medium.com/@yourusername" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-300 hover:text-red-500 transition-colors"
+                >
+                  <FaMedium className="w-5 h-5" />
+                  <span>Medium</span>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 

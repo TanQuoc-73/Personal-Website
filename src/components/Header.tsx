@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaUser, FaChevronDown } from 'react-icons/fa';
+import { FaUser, FaChevronDown, FaGithub, FaFacebook } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { AuthDropdown } from '@/components/AuthDropdown';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
@@ -230,19 +230,26 @@ function HeaderContent() {
           <div className="flex justify-between items-center px-6 md:px-12 lg:px-20 h-10 text-sm relative z-10">
             {/* Left Top */}
             <div className="flex items-center gap-6">
-              {['/links', '/about', '/contact'].map((href) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`relative group transition-all duration-300 ${
-                    isActive(href) ? 'text-white font-semibold' : 'text-gray-300 hover:text-white'
-                  }`}
-                >
-                  {href.replace('/', '') || 'Home'}
-                  <TopFireHighlight isActive={isActive(href)} />
-                  {!isActive(href) && <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-700 transition-all duration-300 group-hover:w-full"></span>}
-                </Link>
-              ))}
+              <div className="flex items-center gap-4">
+              <a 
+                href="https://github.com/yourusername" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-all duration-300 group"
+                title="GitHub"
+              >
+                <FaGithub className="w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
+              </a>
+              <a 
+                href="https://facebook.com/yourusername" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-all duration-300 group"
+                title="Facebook"
+              >
+                <FaFacebook className="w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
+              </a>
+            </div>
 
               {/* Admin nav if admin */}
               {isAdmin && (
